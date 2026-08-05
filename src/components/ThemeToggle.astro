@@ -1,0 +1,112 @@
+---
+import Icon from "./Icon.astro";
+
+/**
+ * Alterna entre os temas Claro, Escuro e Seguir sistema (nessa ordem,
+ * cíclica). A preferência é persistida em localStorage; "Seguir sistema"
+ * significa "sem preferência salva", deixando `prefers-color-scheme`
+ * decidir (ver theme.css). Zero bibliotecas — JavaScript puro e mínimo.
+ * A aplicação do tema já salvo acontece antes disso, via script inline
+ * no <head> do Layout, para evitar flash de tema errado.
+ */
+---
+
+<button
+  type="button"
+  id="theme-toggle"
+  class="theme-toggle"
+  aria-label="Alternar tema"
+>
+  <span class="theme-toggle__icon" data-icon="light">
+    <Icon name="sun" size={18} />
+  </span>
+  <span class="theme-toggle__icon" data-icon="dark">
+    <Icon name="moon" size={18} />
+  </span>
+  <span class="theme-toggle__icon" data-icon="system">
+    <Icon name="monitor" size={18} />
+  </span>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      border-color var(--transition-base),
+      color var(--transition-base);
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .theme-toggle__icon {
+    display: none;
+  }
+
+  /*
+   * Antes do script rodar, mostra o ícone de "sistema" por padrão (evita o
+   * botão aparecer sem nenhum ícone por uma fração de segundo).
+   */
+  .theme-toggle:not([data-active]) .theme-toggle__icon[data-icon="system"] {
+    display: inline-flex;
+  }
+
+  /* Mostra apenas o ícone correspondente à preferência ativa (data-active) */
+  .theme-toggle[data-active="light"] .theme-toggle__icon[data-icon="light"],
+  .theme-toggle[data-active="dark"] .theme-toggle__icon[data-icon="dark"],
+  .theme-toggle[data-active="system"] .theme-toggle__icon[data-icon="system"] {
+    display: inline-flex;
+  }
+</style>
+
+{/*
+  is:inline: roda de forma síncrona, logo após o botão existir no HTML —
+  evita qualquer atraso (script type="module" padrão do Astro é adiado)
+  para sincronizar o ícone/aria-label com a preferência salva.
+*/}
+<script is:inline>
+  (function () {
+    var STORAGE_KEY = "gymlog-theme";
+    var ORDER = ["system", "light", "dark"];
+    var LABELS = {
+      system: "Tema: seguindo o sistema (clique para usar o tema claro)",
+      light: "Tema: claro (clique para usar o tema escuro)",
+      dark: "Tema: escuro (clique para seguir o sistema)",
+    };
+
+    var button = document.getElementById("theme-toggle");
+    if (!button) return;
+
+    function applyPreference(pref) {
+      if (pref === "system") {
+        document.documentElement.removeAttribute("data-theme");
+      } else {
+        document.documentElement.setAttribute("data-theme", pref);
+      }
+      button.setAttribute("data-active", pref);
+      button.setAttribute("aria-label", LABELS[pref]);
+    }
+
+    var stored = localStorage.getItem(STORAGE_KEY);
+    applyPreference(stored === "light" || stored === "dark" ? stored : "system");
+
+    button.addEventListener("click", function () {
+      var activeNow = button.getAttribute("data-active") || "system";
+      var next = ORDER[(ORDER.indexOf(activeNow) + 1) % ORDER.length];
+      localStorage.setItem(STORAGE_KEY, next);
+      applyPreference(next);
+    });
+  })();
+</script>

@@ -34,6 +34,10 @@ const Tag = href ? "a" : "button";
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     cursor: pointer;
+    transition:
+      background-color var(--transition-base),
+      border-color var(--transition-base),
+      color var(--transition-base);
   }
 
   .button--primary {
@@ -53,7 +57,8 @@ const Tag = href ? "a" : "button";
   }
 
   .button--secondary:hover {
-    border-color: var(--color-text-secondary);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
   }
 
   .button--ghost {

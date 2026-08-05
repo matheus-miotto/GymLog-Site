@@ -5,6 +5,39 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.1.0] — 2026-08-05
+
+Unificação da identidade visual do site com o Design System do
+aplicativo GymLog: paleta laranja oficial e suporte completo a temas
+Claro/Escuro/Seguir sistema. Sprint exclusivamente visual — nenhum
+conteúdo, SEO, sitemap, robots ou página foi alterado.
+
+### Adicionado
+
+- Suporte completo a 3 temas — Claro, Escuro e Seguir sistema —, com preferência persistida em `localStorage` e aplicada via `data-theme` no `<html>` + `prefers-color-scheme`. Sem bibliotecas: JavaScript puro e mínimo.
+- `src/components/ThemeToggle.astro`: botão cíclico (ícone `monitor`/`sun`/`moon`) que alterna entre os 3 temas, integrado ao `Header`.
+- Script anti-flash (`is:inline`) no `<head>` do `Layout`, aplicando o tema salvo antes da primeira renderização.
+- Tokens de tema novos em `theme.css`: `--color-header` (fundo do AppBar), `--shadow-sm` (sombra discreta de hover), `--transition-fast`/`--transition-base` (transições centralizadas).
+- Palheta completa do tema Claro em `theme.css` (antes o site era exclusivamente escuro).
+- `::selection` com a cor oficial do GymLog.
+- Destaque da palavra "evolução" em laranja no título do Hero.
+
+### Alterado
+
+- **Cor de destaque oficial trocada de verde (`#22c55e`) para laranja (`#FF5A1F`)**, com variante de hover `#E64A19` — aplicada em botões primários, links ativos, ícones ativos, item de navegação ativo e hover de links/nav/footer.
+- `Header`: fundo passou a usar `--color-header` (tom "AppBar", distinto do fundo da página); reestruturado (`header__end`) para acomodar o `ThemeToggle` mantendo o menu mobile 100% CSS.
+- `Button`, `FeatureCard`, `ValueProp`, `FAQItem` e o card "Informações do projeto" (Suporte) ganharam transições suaves de hover (cor/borda/sombra) usando os novos tokens de transição.
+- `ValueProp` (seção "Por que escolher o GymLog?") e o card de informações do Suporte passaram a usar a mesma superfície/borda/hover de `FeatureCard`, unificando o tratamento de "card" em todo o site.
+- Hover de links de texto passou a manter a cor principal (em vez da variante escura) e ganhou sublinhado, conforme a especificação de cor do briefing.
+
+### Observações
+
+- Nenhuma biblioteca foi adicionada para troca de tema (JavaScript puro, ~40 linhas).
+- Contraste (WCAG AA) verificado para toda a nova paleta; dois pontos ficam abaixo ou na margem do limite de 4.5:1 (texto branco sobre o botão laranja, ~3,1:1; texto secundário do tema claro, ~4,4:1) — mantidos por serem valores exatos da paleta oficial do aplicativo, com o trade-off documentado em [DECISIONS.md](./DECISIONS.md).
+- Responsividade e ausência de rolagem horizontal validadas nos dois temas (claro e escuro), em 390/480/768/1024/1280/1440px, nas 4 páginas.
+- Persistência da preferência de tema validada via automação: alternância cíclica (sistema → claro → escuro → sistema), `localStorage` e recarregamento de página.
+- Conteúdo, SEO, sitemap, `robots.txt`, páginas e documentação (além de `CHANGELOG.md`/`DECISIONS.md`) permaneceram inalterados, conforme escopo desta Sprint.
+
 ## [1.0.0] — 2026-08-05
 
 Encerramento do desenvolvimento da versão 1.0 do site institucional. A

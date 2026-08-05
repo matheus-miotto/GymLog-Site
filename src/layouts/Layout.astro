@@ -50,6 +50,22 @@ const ogImageURL = ogImage
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
+    <!--
+      Aplica o tema salvo (Claro/Escuro) antes da primeira renderização,
+      evitando flash de tema errado. Sem preferência salva, nenhum atributo
+      é definido e o CSS decide sozinho via prefers-color-scheme (Seguir
+      sistema) — ver src/styles/theme.css e ThemeToggle.astro.
+    -->
+    <script is:inline>
+      (function () {
+        try {
+          var pref = localStorage.getItem("gymlog-theme");
+          if (pref === "light" || pref === "dark") {
+            document.documentElement.setAttribute("data-theme", pref);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <link rel="icon" href={withBase("/favicon.ico")} />

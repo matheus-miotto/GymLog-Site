@@ -1,6 +1,7 @@
 ---
 import Container from "./Container.astro";
 import Icon from "./Icon.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 import { withBase } from "../utils/paths";
 
 const { pathname } = Astro.url;
@@ -23,45 +24,54 @@ const links = [
       <a href={withBase("/")} class="header__logo">GymLog</a>
 
       {/*
-        Menu mobile via "checkbox hack": alterna a navegação usando
-        apenas CSS (seletor ~ + :checked), sem nenhum JavaScript.
-        O checkbox fica visualmente oculto mas acessível por teclado.
+        header__end agrupa nav + controles à direita. O checkbox do menu
+        mobile ("checkbox hack": alterna via CSS, sem JavaScript) precisa
+        ficar antes de header__nav no HTML para o seletor `~` funcionar —
+        a ordem visual (nav, ThemeToggle, hambúrguer) é só CSS (o checkbox
+        fica oculto e o restante segue a ordem natural do HTML).
       */}
-      <input
-        type="checkbox"
-        id="nav-toggle"
-        class="header__toggle-input"
-        aria-controls="primary-navigation"
-      />
-      <label
-        for="nav-toggle"
-        class="header__toggle-label"
-        aria-label="Abrir menu de navegação"
-      >
-        <span class="header__toggle-icon header__toggle-icon--menu">
-          <Icon name="menu" size={22} />
-        </span>
-        <span class="header__toggle-icon header__toggle-icon--close">
-          <Icon name="x" size={22} />
-        </span>
-      </label>
+      <div class="header__end">
+        <input
+          type="checkbox"
+          id="nav-toggle"
+          class="header__toggle-input"
+          aria-controls="primary-navigation"
+        />
 
-      <nav
-        class="header__nav"
-        id="primary-navigation"
-        aria-label="Navegação principal"
-      >
-        {
-          links.map((link) => (
-            <a
-              href={withBase(link.href)}
-              aria-current={pathname === withBase(link.href) ? "page" : undefined}
-            >
-              {link.label}
-            </a>
-          ))
-        }
-      </nav>
+        <nav
+          class="header__nav"
+          id="primary-navigation"
+          aria-label="Navegação principal"
+        >
+          {
+            links.map((link) => (
+              <a
+                href={withBase(link.href)}
+                aria-current={
+                  pathname === withBase(link.href) ? "page" : undefined
+                }
+              >
+                {link.label}
+              </a>
+            ))
+          }
+        </nav>
+
+        <ThemeToggle />
+
+        <label
+          for="nav-toggle"
+          class="header__toggle-label"
+          aria-label="Abrir menu de navegação"
+        >
+          <span class="header__toggle-icon header__toggle-icon--menu">
+            <Icon name="menu" size={22} />
+          </span>
+          <span class="header__toggle-icon header__toggle-icon--close">
+            <Icon name="x" size={22} />
+          </span>
+        </label>
+      </div>
     </div>
   </Container>
 </header>
@@ -69,7 +79,10 @@ const links = [
 <style>
   .header {
     border-bottom: 1px solid var(--color-border);
-    background-color: var(--color-bg);
+    background-color: var(--color-header);
+    transition:
+      background-color var(--transition-base),
+      border-color var(--transition-base);
   }
 
   .header__inner {
@@ -84,10 +97,17 @@ const links = [
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     color: var(--color-text-primary);
+    transition: color var(--transition-base);
   }
 
   .header__logo:hover {
     color: var(--color-primary);
+  }
+
+  .header__end {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
   }
 
   /* Checkbox visualmente oculto, mas mantido acessível (foco/leitor de tela) */
@@ -111,6 +131,7 @@ const links = [
     height: 2.25rem;
     color: var(--color-text-primary);
     cursor: pointer;
+    transition: color var(--transition-base);
   }
 
   .header__toggle-input:focus-visible ~ .header__toggle-label {
@@ -140,11 +161,12 @@ const links = [
   .header__nav a {
     color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
+    transition: color var(--transition-base);
   }
 
   .header__nav a:hover,
   .header__nav a[aria-current="page"] {
-    color: var(--color-text-primary);
+    color: var(--color-primary);
   }
 
   @media (max-width: 767px) {
@@ -162,7 +184,7 @@ const links = [
       align-items: flex-start;
       gap: var(--space-sm);
       padding: var(--space-md);
-      background-color: var(--color-bg);
+      background-color: var(--color-header);
       border-bottom: 1px solid var(--color-border);
     }
 

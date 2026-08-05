@@ -14,9 +14,7 @@ body {
   padding: 0;
 }
 
-html {
-  color-scheme: dark;
-}
+/* color-scheme (claro/escuro) é definido por tema em theme.css (:root) */
 
 body {
   background-color: var(--color-bg);
@@ -26,6 +24,9 @@ body {
   line-height: var(--line-height-base);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
 }
 
 h1,
@@ -48,10 +49,25 @@ p {
 a {
   color: var(--color-primary);
   text-decoration: none;
+  transition: color var(--transition-base);
 }
 
+/*
+ * Hover de links usa a própria cor principal (#FF5A1F), não a variante
+ * escura de hover (--color-primary-hover) — essa é só para elementos que
+ * já têm fundo laranja em repouso (ex.: botão primário), onde é preciso
+ * escurecer para o hover ficar visível. Como o link já é laranja, o
+ * sublinhado é o que sinaliza a interação.
+ */
 a:hover {
-  color: var(--color-primary-hover);
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* Seleção de texto na cor oficial do GymLog */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
 }
 
 /*

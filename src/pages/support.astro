@@ -109,6 +109,14 @@ const projectInfo = [
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background-color: var(--color-surface);
+    transition:
+      border-color var(--transition-base),
+      box-shadow var(--transition-base);
+  }
+
+  .info-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
   }
 
   .info-card__row {

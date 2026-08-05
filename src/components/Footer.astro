@@ -53,6 +53,9 @@ const links = [
   .footer {
     border-top: 1px solid var(--color-border);
     background-color: var(--color-bg);
+    transition:
+      background-color var(--transition-base),
+      border-color var(--transition-base);
   }
 
   .footer__top {
@@ -87,11 +90,12 @@ const links = [
   .footer__contact a {
     color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
+    transition: color var(--transition-base);
   }
 
   .footer__nav a:hover,
   .footer__contact a:hover {
-    color: var(--color-text-primary);
+    color: var(--color-primary);
   }
 
   .footer__bottom {

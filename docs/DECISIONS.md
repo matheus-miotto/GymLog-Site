@@ -4,6 +4,134 @@ Registro das decisões de arquitetura tomadas ao longo do projeto, com o
 motivo por trás de cada uma. Novas decisões relevantes devem ser
 adicionadas aqui nas Sprints em que forem tomadas.
 
+## Sprint 1.1.0 — Identidade visual GymLog (paleta laranja + temas)
+
+### Temas via `data-theme` + `prefers-color-scheme`, sem biblioteca
+
+Três preferências — Claro, Escuro, Seguir sistema — implementadas com:
+`data-theme="light"`/`"dark"` no `<html>` (persistido em `localStorage`
+como `gymlog-theme`) para escolha explícita, e `@media
+(prefers-color-scheme: light)` combinado com `:root:not([data-theme])`
+para "Seguir sistema" (ausência de preferência salva). Os valores de cor
+de cada tema ficam duplicados entre o bloco `@media` e o bloco
+`[data-theme="light"]` em `theme.css` — não há como evitar isso em CSS
+puro sem pré-processador (sem nesting sofisticado), mas é um padrão
+amplamente usado e documentado com um comentário lembrando de manter os
+dois blocos sincronizados.
+
+**Motivo**: o briefing veta explicitamente bibliotecas de troca de tema
+("não adicionar bibliotecas para troca de tema"). O padrão
+atributo+media-query é o modo padrão de mercado para essa funcionalidade
+sem JavaScript de terceiros, e reaproveita a mesma arquitetura de
+variáveis CSS já centralizada em `theme.css` desde a Sprint 0.1.
+
+### Script anti-flash (`is:inline`) no `<head>`, antes de qualquer CSS
+
+Um script inline síncrono (não um `<script>` de módulo, que o Astro
+adiaria) foi colocado logo após `<meta charset>` no `<head>` do `Layout`,
+antes de qualquer folha de estilo. Ele lê `localStorage` e aplica
+`data-theme` no `<html>` antes da primeira renderização.
+
+**Motivo**: sem isso, a página renderizaria brevemente no tema padrão
+(escuro) antes do JavaScript aplicar o tema salvo (Claro), causando um
+"flash" visível — o problema clássico de temas com preferência
+persistida. Confirmado via inspeção do HTML gerado que o script aparece
+antes dos `<link rel="stylesheet">` no `<head>`. Pelo mesmo motivo, o
+próprio botão `ThemeToggle` também usa `is:inline` (script síncrono, não
+módulo) para sincronizar seu ícone imediatamente, sem esperar o
+carregamento adiado padrão dos `<script>` do Astro.
+
+### `ThemeToggle`: um botão cíclico, não três botões separados
+
+Um único botão alterna entre Seguir sistema → Claro → Escuro (nessa
+ordem), trocando o ícone (`monitor`/`sun`/`moon`) conforme o estado
+ativo, em vez de três botões/abas separados.
+
+**Motivo**: o Header já acumula logo, navegação (4 itens) e o menu
+hambúrguer em telas pequenas — três controles adicionais de tema
+disputariam espaço e contrariariam a característica "minimalista, poucos
+elementos decorativos" citada como referência visual. Um único botão
+compacto com ícone dinâmico e `aria-label` descritivo (ex.: "Tema:
+escuro (clique para seguir o sistema)") mantém a funcionalidade completa
+(3 estados, acessível por teclado e leitor de tela) sem adicionar
+elementos visuais extras ao Header.
+
+### Header reestruturado (`header__end`) para acomodar o `ThemeToggle`
+
+O `Header` ganhou um wrapper `header__end` agrupando nav, `ThemeToggle` e
+o botão hambúrguer, mantendo `header__inner` com apenas dois filhos
+(logo + `header__end`) para preservar o `justify-content: space-between`
+original. A ordem real no HTML é checkbox → nav → `ThemeToggle` → label,
+porque o "checkbox hack" do menu mobile (Sprint 0.2.1) exige que o
+checkbox venha *antes* de `.header__nav` no HTML para o seletor `~`
+funcionar; a ordem visual desejada (nav, tema, hambúrguer) sai de graça
+porque o checkbox é visualmente oculto e os demais elementos já seguem
+essa sequência no HTML — sem precisar da propriedade `order`.
+
+**Motivo**: manter o menu mobile 100% CSS (sem JavaScript, decisão já
+tomada na Sprint 0.2.1) impôs essa restrição de ordem; entender a fundo
+como o seletor `~` opera evitou introduzir `order` ou JavaScript
+adicional só para reorganizar visualmente os itens.
+
+### Paleta oficial aplicada literalmente, incluindo onde o contraste é limítrofe
+
+Os hexadecimais exatos do briefing (`#FF5A1F`, `#E64A19`, bordas do tema
+claro `#374151`, texto secundário `#6B7280`) foram usados sem ajustes.
+Verificação de contraste (WCAG AA, 4.5:1 — padrão já seguido pelo projeto
+desde a Sprint 0.2.1):
+
+- Laranja (`#FF5A1F`) como texto sobre o fundo escuro (`#121212`): ~6:1 — OK.
+- Texto branco sobre o botão primário laranja: ~3,1:1 — abaixo de 4.5:1 (WCAG AA para texto), mas o briefing pede explicitamente "texto branco" no botão primário, e é uma combinação já usada pelo aplicativo (mesma cor oficial). Botões têm affordance visual além da cor (formato, preenchimento), o que atenua o impacto prático.
+- Texto secundário do tema claro (`#6B7280` sobre `#F4F4F5`): ~4,4:1, marginalmente abaixo de 4.5:1 — dentro da margem de arredondamento/perfil de cor, mantido como especificado.
+- `--color-text-muted` do tema claro foi igualado a `--color-text-secondary` (`#6B7280`): no tema claro não há uma cor ainda mais clara que `#6B7280` com margem de contraste sobre `#F4F4F5`/`#FFFFFF`, então criar um tom "mais apagado" quebraria a acessibilidade. No tema escuro, o `--color-text-muted` (`#85858c`, já validado na Sprint 0.2.1) foi mantido — segue compatível com o novo fundo `#121212`.
+
+**Motivo**: o objetivo explícito desta Sprint é paridade visual exata com
+o aplicativo ("o visual deverá seguir exatamente a linguagem do
+aplicativo"), com valores hexadecimais fornecidos com precisão de dígito
+— não é meu lugar suavizar a cor oficial da marca unilateralmente. Optei
+por documentar o trade-off de contraste com transparência (como já feito
+para o `robots.txt` na Sprint 1.0.0) em vez de silenciosamente alterar a
+paleta fornecida.
+
+### `--color-bg-elevated` mantida como token interno (não pedida no briefing)
+
+O tom "elevado" usado internamente pelo `AppMockup` (barras/linhas do
+placeholder) e pelo ícone do `ValueProp` recebeu valores novos em ambos
+os temas (`#181818` escuro / `#efeff1` claro), interpolados entre
+`--color-bg` e `--color-surface` — o briefing não especifica esse tom.
+
+**Motivo**: esse token já existia desde a Sprint 0.1 para um uso
+puramente decorativo interno; extinguir ou fundir com `--color-surface`
+quebraria o contraste sutil que o `AppMockup` usa para simular linhas de
+conteúdo. Escolhido um valor consistente com a "distância" proporcional
+entre bg/surface que já existia no tema escuro original.
+
+### `ValueProp` e o card "Informações do projeto" ganharam superfície/borda
+
+A seção "Por que escolher o GymLog?" (`ValueProp`) e o card de
+informações do Suporte passaram a usar a mesma superfície/borda/hover de
+`FeatureCard`, quando antes (Sprint 0.2.1) eram deliberadamente mais
+"leves" (sem borda) para gerar variedade visual entre seções.
+
+**Motivo**: o briefing agrupa explicitamente "recursos; FAQ; diferenciais;
+suporte" sob o mesmo padrão de card ("mesma superfície do aplicativo;
+bordas discretas; hover suave") — a variedade visual buscada na Sprint
+0.2.1 foi conscientemente trocada por consistência de Design System,
+que é o objetivo explícito desta Sprint.
+
+### Hover de links de texto usa a cor principal (não a variante escura)
+
+`--color-primary-hover` (`#E64A19`) segue reservada a elementos que já
+têm fundo laranja em repouso (botão primário). Para links de texto (que
+já usam `--color-primary` no estado normal), o hover mantém a mesma cor
+e ganha sublinhado — atendendo literalmente ao "Links: Hover: #FF5A1F"
+do briefing sem tornar o hover visualmente idêntico ao estado normal.
+
+**Motivo**: o briefing especifica dois hex de hover diferentes em duas
+seções distintas (`#E64A19` junto à "Cor principal", `#FF5A1F` na seção
+"Links") — interpretados como dois tratamentos de hover distintos
+conforme o elemento já parte ou não de um fundo laranja.
+
 ## Sprint 1.0.0 — Acabamento final e congelamento da v1.0
 
 ### Sitemap via `@astrojs/sitemap`, com a página 404 filtrada

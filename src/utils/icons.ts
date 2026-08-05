@@ -19,6 +19,9 @@ import brain from "lucide-static/icons/brain.svg?raw";
 import gauge from "lucide-static/icons/gauge.svg?raw";
 import barChart3 from "lucide-static/icons/bar-chart-3.svg?raw";
 import refreshCw from "lucide-static/icons/refresh-cw.svg?raw";
+import sun from "lucide-static/icons/sun.svg?raw";
+import moon from "lucide-static/icons/moon.svg?raw";
+import monitor from "lucide-static/icons/monitor.svg?raw";
 
 /**
  * Registro central dos ícones utilizados no site (biblioteca Lucide,
@@ -47,6 +50,9 @@ export const ICONS = {
   gauge,
   "bar-chart-3": barChart3,
   "refresh-cw": refreshCw,
+  sun,
+  moon,
+  monitor,
 } as const;
 
 export type IconName = keyof typeof ICONS;

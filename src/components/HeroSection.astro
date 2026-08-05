@@ -10,7 +10,9 @@ import AppMockup from "./AppMockup.astro";
     <div class="hero">
       <div class="hero__content">
         <p class="hero__kicker">GymLog</p>
-        <h1 class="hero__title">Treine melhor.<br />Acompanhe sua evolução.</h1>
+        <h1 class="hero__title">
+          Treine melhor.<br />Acompanhe sua <span class="hero__highlight">evolução</span>.
+        </h1>
         <p class="hero__subtitle">
           O GymLog ajuda você a registrar treinos, acompanhar sua evolução
           física e organizar seus ciclos de treino, tudo de forma rápida,
@@ -52,6 +54,10 @@ import AppMockup from "./AppMockup.astro";
   .hero__title {
     font-size: var(--font-size-5xl);
     margin-bottom: var(--space-md);
+  }
+
+  .hero__highlight {
+    color: var(--color-primary);
   }
 
   .hero__subtitle {
