@@ -2,16 +2,125 @@
 import Layout from "../layouts/Layout.astro";
 import Section from "../components/Section.astro";
 import Container from "../components/Container.astro";
+import { SITE } from "../utils/site";
+
+/**
+ * Conteúdo escrito diretamente aqui (e não em src/utils/, como o
+ * conteúdo em cards da Home) por ser um texto corrido de política,
+ * não uma lista de itens estruturados repetíveis — ver DECISIONS.md.
+ */
+const lastUpdated = "5 de agosto de 2026";
 ---
 
 <Layout
   title="Política de Privacidade"
-  description="Política de Privacidade do GymLog. Conteúdo temporário — texto oficial será definido em Sprint futura."
+  description="Política de Privacidade do GymLog: veja como tratamos seus dados. O aplicativo funciona 100% offline, sem conta e sem enviar informações a servidores."
 >
   <Section ariaLabel="Política de Privacidade">
     <Container>
-      <h1>Política de Privacidade</h1>
-      <p>Página em construção. O conteúdo oficial será adicionado em uma Sprint futura.</p>
+      <article class="legal-document">
+        <header class="legal-document__header">
+          <h1>Política de Privacidade</h1>
+          <p class="legal-document__updated">Última atualização: {lastUpdated}</p>
+          <p>
+            O GymLog foi criado para funcionar de forma simples e
+            transparente: você registra seus treinos, e os dados ficam com
+            você. Esta página explica, de forma clara, quais informações o
+            aplicativo utiliza, como elas são armazenadas e quais direitos
+            você tem sobre elas.
+          </p>
+        </header>
+
+        <h2>Dados coletados</h2>
+        <p>
+          O GymLog armazena, localmente no seu dispositivo, apenas os dados
+          que você insere para registrar e acompanhar seus treinos:
+        </p>
+        <ul>
+          <li>treinos e sessões de treino;</li>
+          <li>exercícios cadastrados;</li>
+          <li>cargas e repetições;</li>
+          <li>avaliações corporais, quando registradas por você;</li>
+          <li>configurações do aplicativo.</li>
+        </ul>
+        <p>
+          Esses dados permanecem armazenados apenas no seu dispositivo. O
+          GymLog não possui servidores próprios e não envia essas
+          informações para nenhum lugar.
+        </p>
+
+        <h2>Dados que não coletamos</h2>
+        <p>Atualmente, o GymLog não coleta:</p>
+        <ul>
+          <li>localização;</li>
+          <li>contatos;</li>
+          <li>fotos;</li>
+          <li>acesso à câmera;</li>
+          <li>acesso ao microfone;</li>
+          <li>e-mail;</li>
+          <li>senha;</li>
+          <li>dados bancários ou de pagamento.</li>
+        </ul>
+        <p>
+          Como o aplicativo não exige criação de conta nem login, também não
+          há coleta de credenciais ou de dados de identificação pessoal.
+        </p>
+
+        <h2>Armazenamento</h2>
+        <p>
+          Todos os dados do GymLog permanecem armazenados localmente no
+          dispositivo em que o aplicativo está instalado. O GymLog permite
+          exportar um backup dos seus dados e importá-lo posteriormente,
+          sempre por sua própria iniciativa. Você é o único responsável por
+          guardar esse backup em um local seguro — o GymLog não realiza
+          backup automático em nuvem.
+        </p>
+
+        <h2>Compartilhamento de dados</h2>
+        <p>
+          O GymLog não vende, compartilha ou transmite seus dados pessoais a
+          terceiros. Como o aplicativo funciona totalmente offline e não
+          possui servidores próprios, não há transmissão de dados para fora
+          do seu dispositivo.
+        </p>
+
+        <h2>Direitos do usuário</h2>
+        <p>
+          Como todos os dados ficam armazenados apenas no seu dispositivo,
+          você tem controle total sobre eles. A qualquer momento, você pode:
+        </p>
+        <ul>
+          <li>excluir seus dados diretamente no aplicativo;</li>
+          <li>
+            remover o aplicativo do seu dispositivo, apagando todos os
+            dados armazenados;
+          </li>
+          <li>restaurar um backup criado anteriormente por você.</li>
+        </ul>
+
+        <h2>Segurança</h2>
+        <p>
+          Adotamos cuidados no desenvolvimento do GymLog para proteger a
+          integridade dos seus dados. Ainda assim, nenhum software pode
+          garantir segurança absoluta. Recomendamos manter seu dispositivo
+          protegido (com senha, bloqueio de tela, etc.) e guardar seus
+          backups em um local seguro.
+        </p>
+
+        <h2>Alterações nesta Política</h2>
+        <p>
+          Esta Política de Privacidade pode ser atualizada caso novas
+          funcionalidades do GymLog alterem a forma como os dados são
+          tratados. Ao publicar uma nova versão desta página, atualizaremos
+          a data indicada no topo. Recomendamos revisá-la periodicamente.
+        </p>
+
+        <h2>Contato</h2>
+        <p>
+          Dúvidas sobre esta Política de Privacidade podem ser enviadas para{" "}
+          <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>.
+        </p>
+      </article>
     </Container>
   </Section>
 </Layout>

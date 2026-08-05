@@ -2,16 +2,142 @@
 import Layout from "../layouts/Layout.astro";
 import Section from "../components/Section.astro";
 import Container from "../components/Container.astro";
+import FAQItem from "../components/FAQItem.astro";
+import { SITE } from "../utils/site";
+import { SUPPORT_FAQ } from "../utils/support-content";
+import pkg from "../../package.json";
+
+/**
+ * Conteúdo escrito diretamente aqui, seguindo o mesmo critério da
+ * Política de Privacidade e dos Termos de Uso (ver DECISIONS.md): texto
+ * corrido de página institucional. Apenas o FAQ (dados estruturados e
+ * repetíveis) fica em src/utils/support-content.ts.
+ */
+const projectInfo = [
+  { label: "Nome do aplicativo", value: SITE.name },
+  { label: "Versão atual do aplicativo", value: SITE.appVersion },
+  { label: "Versão do site", value: pkg.version },
+  { label: "Plataforma", value: "Android e iOS" },
+  { label: "Licença", value: "Proprietária — todos os direitos reservados" },
+];
 ---
 
 <Layout
   title="Suporte"
-  description="Canal de suporte do GymLog. Conteúdo temporário — formulário de contato será adicionado em Sprint futura."
+  description="Suporte do GymLog: tire dúvidas, envie sugestões ou relate problemas do aplicativo. Respostas manuais em até 2 dias úteis."
 >
   <Section ariaLabel="Suporte">
     <Container>
-      <h1>Suporte</h1>
-      <p>Página em construção. O formulário de contato será adicionado em uma Sprint futura.</p>
+      <article class="legal-document">
+        <header class="legal-document__header">
+          <h1>Suporte</h1>
+          <p>
+            O GymLog oferece suporte para dúvidas, sugestões, relatos de
+            bugs, pedidos de melhoria e outros problemas relacionados ao
+            aplicativo. Esta página reúne as principais informações para
+            entrar em contato e tirar suas dúvidas mais comuns.
+          </p>
+        </header>
+
+        <h2>Contato</h2>
+        <p>
+          Para dúvidas, sugestões ou relato de problemas, entre em contato
+          pelo e-mail{" "}
+          <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>.
+        </p>
+
+        <h2>Tempo de resposta</h2>
+        <p>
+          Todas as mensagens são respondidas manualmente. O prazo estimado
+          de resposta é de até 2 dias úteis.
+        </p>
+
+        <h2>Antes de entrar em contato</h2>
+        <p>Para agilizar o atendimento, antes de enviar sua mensagem:</p>
+        <ul>
+          <li>verifique se você está usando a versão mais recente do aplicativo;</li>
+          <li>informe o modelo do seu aparelho;</li>
+          <li>informe a versão do aplicativo que está utilizando;</li>
+          <li>descreva os passos para reproduzir o problema;</li>
+          <li>envie capturas de tela, quando possível.</li>
+        </ul>
+
+        <h2>Perguntas frequentes</h2>
+        <div class="faq-list">
+          {
+            SUPPORT_FAQ.map((item) => (
+              <FAQItem question={item.question} answer={item.answer} />
+            ))
+          }
+        </div>
+
+        <h2>Informações do projeto</h2>
+        <dl class="info-card">
+          {
+            projectInfo.map((item) => (
+              <div class="info-card__row">
+                <dt>{item.label}</dt>
+                <dd>{item.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <h2>Sugestões</h2>
+        <p>
+          O GymLog está em evolução contínua, e sugestões de quem usa o
+          aplicativo ajudam a definir os próximos passos. Se você tem uma
+          ideia de melhoria, ficaremos felizes em ouvir — basta enviar sua
+          sugestão pelo e-mail de contato acima.
+        </p>
+      </article>
     </Container>
   </Section>
 </Layout>
+
+<style>
+  .faq-list {
+    margin-bottom: var(--space-sm);
+  }
+
+  .info-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin: 0 0 var(--space-lg);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+  }
+
+  .info-card__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .info-card__row dt {
+    color: var(--color-text-muted);
+  }
+
+  .info-card__row dd {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    text-align: right;
+  }
+
+  @media (max-width: 480px) {
+    .info-card__row {
+      flex-direction: column;
+      gap: var(--space-3xs);
+    }
+
+    .info-card__row dd {
+      text-align: left;
+    }
+  }
+</style>

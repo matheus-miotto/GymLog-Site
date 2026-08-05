@@ -18,6 +18,8 @@ interface Props {
   ogImage?: string;
   ogImageAlt?: string;
   ogType?: "website" | "article";
+  /** Usar apenas em páginas que não devem ser indexadas (ex.: 404). */
+  noindex?: boolean;
 }
 
 const {
@@ -26,6 +28,7 @@ const {
   ogImage,
   ogImageAlt,
   ogType = "website",
+  noindex = false,
 } = Astro.props;
 
 // Páginas que já compõem o próprio título com o nome do site (ex.: a Home)
@@ -51,6 +54,7 @@ const ogImageURL = ogImage
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
     <link rel="icon" href={withBase("/favicon.ico")} />
     <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <title>{pageTitle}</title>
     <meta name="description" content={description} />

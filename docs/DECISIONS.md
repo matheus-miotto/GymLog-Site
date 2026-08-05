@@ -4,6 +4,238 @@ Registro das decisões de arquitetura tomadas ao longo do projeto, com o
 motivo por trás de cada uma. Novas decisões relevantes devem ser
 adicionadas aqui nas Sprints em que forem tomadas.
 
+## Sprint 1.0.0 — Acabamento final e congelamento da v1.0
+
+### Sitemap via `@astrojs/sitemap`, com a página 404 filtrada
+
+Instalada a integração oficial `@astrojs/sitemap` (v3.7.3), configurada em
+`astro.config.mjs` com um `filter` excluindo `/404/` do resultado.
+
+**Motivo**: o briefing pede explicitamente a integração oficial em vez de
+uma solução manual. A página 404 não é conteúdo navegável e não deve ser
+indexada nem listada — por isso o filtro, e também `noindex` na própria
+página (ver abaixo). Validado que o `base` (`/GymLog-Site`) é aplicado
+corretamente em todas as URLs geradas (checado no `dist/sitemap-0.xml`
+após build).
+
+### `Layout` ganhou a prop `noindex`, usada apenas em `404.astro`
+
+Adicionada uma prop opcional `noindex?: boolean` ao `Layout`, que emite
+`<meta name="robots" content="noindex, nofollow" />` quando `true`. É a
+única página do site que a utiliza.
+
+**Motivo**: uma página 404 não deveria ser indexada por buscadores nem
+aparecer em resultados de busca — é uma prática de SEO padrão. Como o
+`Layout` já centraliza todo o `<head>` do site, adicionar uma prop opcional
+ali (em vez de duplicar tags `<head>` em `404.astro`) manteve a página 404
+consistente com o restante do site sem duplicar lógica.
+
+### `robots.txt` referencia o `sitemap-index.xml` sob o próprio subcaminho
+
+`public/robots.txt` aponta para
+`https://matheus-miotto.github.io/GymLog-Site/sitemap-index.xml`.
+
+**Motivo/limitação conhecida**: como o site é um "repositório de projeto"
+do GitHub Pages (não `matheus-miotto.github.io` na raiz), o `robots.txt`
+só pode ser servido em `/GymLog-Site/robots.txt`, não em `/robots.txt` na
+raiz do domínio `github.io`. Rastreadores que só verificam a raiz do
+domínio (comportamento antigo, hoje incomum) podem não encontrar este
+arquivo automaticamente — é uma limitação inerente à hospedagem escolhida
+(GitHub Pages em subcaminho), não algo corrigível dentro deste projeto sem
+adotar um domínio próprio (fora de escopo). Mecanismos modernos (Google
+Search Console, submissão manual do sitemap) não dependem da raiz do
+domínio.
+
+### Botão da página 404 reaproveita o `Button` (primeiro uso real no site)
+
+`404.astro` usa `<Button href={withBase("/")}>Voltar para o início</Button>`.
+
+**Motivo**: o `Button` foi criado na Sprint 0.1 como parte da biblioteca
+inicial de componentes, mas nunca havia sido usado em nenhuma página até
+agora (`StoreBadge` resolveu o caso de uso da Home de forma mais
+específica). A página 404 é exatamente o tipo de call-to-action simples
+para o qual o `Button` foi desenhado — nenhuma nova variante ou alteração
+foi necessária.
+
+### Limpeza de código morto: dois ícones e quatro variáveis de tema removidos
+
+Removidos de `src/utils/icons.ts`: os ícones `shield-check` e `smile`,
+importados desde a Sprint 0.2 mas sem nenhum uso — sobras da seção
+"Diferenciais", removida na Sprint 0.2.1 e substituída por "Por que
+escolher o GymLog?" com um conjunto de ícones diferente.
+
+Removidas de `src/styles/theme.css`: `--font-size-2xl`, `--font-size-4xl`,
+`--font-weight-regular` e `--space-xs` — variáveis declaradas desde a
+Sprint 0.1 mas nunca referenciadas por nenhum componente ou página
+(confirmado varrendo todo `src/` em busca de `var(--nome-da-variável)`).
+
+**Motivo**: pedido explícito desta Sprint ("remover código morto, imports
+não utilizados, estilos não utilizados"), reforçado pelo caráter de
+congelamento da v1.0 — manter apenas o que está de fato em uso reduz a
+superfície de manutenção. Os tokens de breakpoint
+(`--breakpoint-sm/md/lg/xl`) **não** foram removidos apesar de também não
+serem referenciados em nenhum `var()`: eles têm uma justificativa
+explícita e documentada desde a Sprint 0.1 (espelhados em
+`src/utils/breakpoints.ts` para uso futuro em JavaScript), diferente das
+demais variáveis removidas, que não tinham nenhuma razão documentada para
+existir sem uso. As variantes `secondary`/`ghost` do `Button` também foram
+mantidas mesmo sem uso atual: fazem parte da API pública do componente
+(prop `variant`), não são código morto no mesmo sentido — permanecem
+alcançáveis e prontas para uso, e removê-las reduziria a reutilização
+futura do componente sem nenhum ganho real.
+
+### `SITE.description` removida; `SITE.url` corrigida para a URL real
+
+`SITE.description` foi removida de `src/utils/site.ts` — nunca era lida em
+nenhum lugar do código (cada página já define sua própria `description`
+específica passada ao `Layout`) e seu texto estava desatualizado ("Conteúdo
+institucional em preparação", falso desde que todas as páginas passaram a
+ter conteúdo definitivo). `SITE.url` foi corrigida de `https://gymlog.app`
+(domínio fictício, nunca registrado) para `https://matheus-miotto.github.io`
+— o mesmo valor do `site` em `astro.config.mjs`, usado apenas como
+fallback defensivo caso `Astro.site` não esteja disponível.
+
+**Motivo**: alinhado à revisão de "nenhuma informação fictícia" já seguida
+desde a Sprint 0.3, e ao objetivo desta Sprint de eliminar código/dados
+não utilizados ou incorretos antes do congelamento da v1.0.
+
+## Sprint 0.5.0 — Página de Suporte
+
+### Reaproveitamento total: nenhum componente novo criado
+
+A página de Suporte reutiliza `Layout`, `Section`, `Container` e
+`FAQItem` (já existente, criado para o FAQ da Home) e as classes
+`.legal-document` (compartilhadas com Política de Privacidade e Termos de
+Uso). O único elemento visual novo — o card "Informações do projeto" — foi
+resolvido com um `<dl>` semântico e um pequeno bloco `<style>` local a
+`support.astro`, sem virar componente.
+
+**Motivo**: pedido explícito do briefing ("antes de criar qualquer
+componente novo, verificar se algum componente existente já resolve o
+problema") e reforçado pela observação de que este é o "acabamento" das
+páginas institucionais obrigatórias — o próximo foco é o app em si, não
+mais expandir a biblioteca de componentes do site. O card de informações
+é usado uma única vez no projeto; criar um componente para um único uso
+seria abstração prematura. Se um segundo caso de uso surgir no futuro
+(outra lista de "rótulo: valor"), extrair um componente `InfoCard`
+nesse momento será trivial, já que o CSS já está isolado num único bloco.
+
+### FAQ do Suporte com dados próprios, reaproveitando o tipo `FaqEntry` da Home
+
+`src/utils/support-content.ts` exporta `SUPPORT_FAQ`, com perguntas
+específicas de atendimento (diferentes das perguntas do FAQ da Home).
+O tipo é importado de `home-content.ts` (`import type { FaqEntry }`) em
+vez de redeclarado.
+
+**Motivo**: o conteúdo é diferente (perguntas de suporte vs. perguntas de
+apresentação do produto), mas a *forma* dos dados é idêntica
+(pergunta + resposta) — reaproveitar o tipo evita duas interfaces
+idênticas competindo no projeto, sem forçar os dois FAQs a compartilhar
+o mesmo array.
+
+### Card "Informações do projeto" sem inventar uma licença
+
+O campo "Licença" exibe "Proprietária — todos os direitos reservados", em
+vez de nomear uma licença de código aberto (MIT, Apache etc.) ou omitir o
+campo.
+
+**Motivo**: não existe arquivo `LICENSE` no repositório, então afirmar uma
+licença open source específica seria fictício. O texto escolhido apenas
+repete, em outras palavras, o que os Termos de Uso já declaram na seção
+"Propriedade intelectual" (código, marca e conteúdo pertencem ao
+desenvolvedor do GymLog) — não é uma informação nova ou inventada.
+
+## Sprint 0.4.0 — Termos de Uso e e-mail oficial
+
+### Estilos de documento legal extraídos para `global.css`
+
+Os estilos antes locais de `privacy.astro` (classe `.policy`) foram
+renomeados para `.legal-document` e movidos para `src/styles/global.css`,
+onde ficam disponíveis para qualquer página. `privacy.astro` e
+`terms.astro` agora compartilham exatamente as mesmas regras CSS.
+
+**Motivo**: o briefing desta Sprint exige que Termos de Uso e Política de
+Privacidade tenham "mesma estrutura visual, mesma tipografia, mesmo
+espaçamento, mesma organização". Duplicar o bloco `<style>` em cada
+página garantiria isso apenas no momento da cópia — qualquer ajuste
+futuro em uma página (ex.: espaçamento entre seções) exigiria lembrar de
+replicar manualmente na outra, com risco real de as páginas divergirem
+ao longo do tempo. Compartilhar uma única fonte de estilo elimina esse
+risco por construção.
+
+### Preparação para Premium com linguagem condicional, sem inventar planos
+
+A seção "Funcionalidades Premium" dos Termos usa exclusivamente
+linguagem condicional ("Caso o GymLog disponibilize..."), aborda
+cobrança/cancelamento/período de teste apenas de forma genérica, e afirma
+explicitamente que nenhum valor ou plano está definido nesta versão.
+
+**Motivo**: pedido explícito do briefing — preparar os Termos para uma
+futura monetização sem afirmar que ela já existe nem inventar preços.
+Isso evita que os Termos precisem ser reescritos do zero quando/se um
+plano Premium for lançado: bastará detalhar as condições específicas
+dentro da seção já existente.
+
+### E-mail de suporte: troca única em `site.ts`, sem duplicar a string em nenhum outro lugar
+
+O e-mail `gymlog.support@gmail.com` foi escrito uma única vez, em
+`SITE.supportEmail` (`src/utils/site.ts`). `Footer.astro`, `privacy.astro`
+e o novo `terms.astro` sempre leem essa constante — nenhum deles contém a
+string do e-mail escrita manualmente.
+
+**Motivo**: já era a arquitetura estabelecida desde a Sprint 0.2.1; esta
+Sprint apenas confirma seu valor prático — trocar o e-mail oficial do
+projeto exigiu editar **um único arquivo** (`site.ts`), e a mudança se
+propagou automaticamente para as 4 páginas do site. Validado via busca
+por `suporte@gymlog.app` (e-mail antigo) em todo o projeto após a
+alteração: nenhuma ocorrência restante.
+
+## Sprint 0.3.0 — Política de Privacidade
+
+### Conteúdo escrito diretamente em `privacy.astro`, sem arquivo de dados em `src/utils/`
+
+Ao contrário do conteúdo da Home (`FEATURES`, `VALUE_PROPS`, `FAQ` em
+`home-content.ts`), o texto da Política de Privacidade foi escrito
+diretamente no markup de `src/pages/privacy.astro`, como HTML semântico
+(`h2`, `p`, `ul`) dentro de um único `<article>`.
+
+**Motivo**: a convenção de extrair conteúdo para `src/utils/*.ts` existe
+para dados estruturados e repetíveis (cards com ícone+título+descrição,
+perguntas e respostas). A Política de Privacidade é texto corrido de
+política — modelá-la como array de objetos (`{ heading, paragraphs, list
+}`) apenas reproduziria HTML dentro de strings JavaScript, dificultando a
+leitura e a edição do texto legal. Para este tipo de conteúdo, escrever
+diretamente como HTML na página é mais direto e continua fácil de revisar
+(cada seção é um `h2` + parágrafos/listas, na ordem em que aparece na
+página).
+
+### Uma única `<Section>`/`<Container>` envolvendo todo o documento
+
+Diferente da Home (que empilha várias seções de marketing, cada uma com
+`padding` vertical generoso via `Section.astro`), a Política de
+Privacidade usa **uma única** `Section`/`Container`, com os tópicos
+organizados como `h2` dentro de um `<article>` contínuo.
+
+**Motivo**: a Política é um documento para ler de forma corrida, não uma
+página de apresentação com blocos visuais distintos. Empilhar oito
+`Section` (cada uma com ~6rem de respiro vertical) tornaria a leitura
+fragmentada e a página desproporcionalmente longa. O espaçamento entre
+tópicos foi resolvido com uma regra local (`margin-top` nos `h2` dentro de
+`.policy`), suficiente para separar visualmente as seções sem os
+intervalos de uma landing page.
+
+### Dados de contato reaproveitados de `SITE.supportEmail`
+
+O e-mail exibido na seção "Contato" vem de `SITE.supportEmail`
+(`src/utils/site.ts`), o mesmo já usado no `Footer` — nenhum e-mail novo
+foi inventado.
+
+**Motivo**: pedido explícito do briefing ("utilizar a constante
+centralizada já criada em `site.ts`"). Como esse valor já está marcado no
+código como temporário (`// Temporário — atualizar quando houver e-mail
+oficial de suporte`), atualizá-lo lá no futuro propaga automaticamente
+para o Footer e para esta página, sem precisar editar a Política.
+
 ## Sprint 0.2.2 — Publicação automática no GitHub Pages
 
 ### `site` e `base` definitivos, sem valores temporários

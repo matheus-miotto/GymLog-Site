@@ -7,9 +7,7 @@ import ruler from "lucide-static/icons/ruler.svg?raw";
 import repeat from "lucide-static/icons/repeat.svg?raw";
 import hardDrive from "lucide-static/icons/hard-drive.svg?raw";
 import wifiOff from "lucide-static/icons/wifi-off.svg?raw";
-import shieldCheck from "lucide-static/icons/shield-check.svg?raw";
 import zap from "lucide-static/icons/zap.svg?raw";
-import smile from "lucide-static/icons/smile.svg?raw";
 import chevronDown from "lucide-static/icons/chevron-down.svg?raw";
 import menu from "lucide-static/icons/menu.svg?raw";
 import x from "lucide-static/icons/x.svg?raw";
@@ -37,9 +35,7 @@ export const ICONS = {
   repeat,
   "hard-drive": hardDrive,
   "wifi-off": wifiOff,
-  "shield-check": shieldCheck,
   zap,
-  smile,
   "chevron-down": chevronDown,
   menu,
   x,

@@ -4,12 +4,12 @@
  */
 export const SITE = {
   name: "GymLog",
-  description:
-    "GymLog é o aplicativo para registro e acompanhamento de treinos. Conteúdo institucional em preparação.",
-  // URL definitiva a ser configurada na Sprint de publicação (GitHub Pages).
-  url: "https://gymlog.app",
-  // Temporário — atualizar quando houver e-mail oficial de suporte.
-  supportEmail: "suporte@gymlog.app",
+  // Usada como base para resolver canonical/Open Graph quando Astro.site
+  // não estiver disponível (fallback defensivo; hoje sempre definido via
+  // `site` em astro.config.mjs). Deve ser mantida igual ao `site` de lá.
+  url: "https://matheus-miotto.github.io",
+  // E-mail oficial de suporte — único ponto de atualização do projeto.
+  supportEmail: "gymlog.support@gmail.com",
   // Versão atual do aplicativo GymLog (projeto separado deste site).
   // Atualizar manualmente a cada release do app.
   appVersion: "0.1.0",

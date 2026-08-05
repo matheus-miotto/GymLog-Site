@@ -4,7 +4,11 @@
 
 Site institucional do GymLog, construído com [Astro](https://astro.build), responsável por apresentar o projeto e hospedar páginas institucionais (Política de Privacidade, Termos de Uso e Suporte).
 
-A Sprint 0.1.0 teve foco exclusivo em **arquitetura, organização e componentes reutilizáveis**. A partir da Sprint 0.2.0, a Home passou a ter conteúdo definitivo, e a Sprint 0.2.1 tratou do acabamento visual, de responsividade e de acessibilidade — a Home deve permanecer estável até a v1.0, recebendo apenas ajustes pontuais (screenshots reais, links das lojas). A Sprint 0.2.2 preparou a infraestrutura de publicação automática no GitHub Pages. As demais páginas (Política de Privacidade, Termos de Uso, Suporte) seguem com conteúdo temporário, a ser substituído em Sprints futuras (ver [ROADMAP.md](./ROADMAP.md)).
+**A versão 1.0.0 marca o encerramento do desenvolvimento deste site.** Ele está funcionalmente concluído: todas as páginas institucionais (Home, Política de Privacidade, Termos de Uso, Suporte) têm conteúdo definitivo, o acabamento técnico (SEO, sitemap, `robots.txt`, página 404, acessibilidade) foi revisado, e o projeto está publicado com deploy automático. Ver histórico completo de todas as Sprints em [ROADMAP.md](./ROADMAP.md).
+
+### Modo de manutenção
+
+A partir da v1.0.0, este site **não recebe novas funcionalidades por conta própria**. Ele entra em modo de manutenção, e só deve ser alterado quando houver uma mudança real no aplicativo GymLog para refletir — por exemplo: lançamento de uma funcionalidade que já está listada em "Em desenvolvimento" na Home, publicação nas lojas (troca dos `StoreBadge` por links reais), screenshots oficiais do app (substituindo o placeholder do `AppMockup`), adoção de domínio próprio, ou mudanças em Política de Privacidade/Termos de Uso caso o comportamento do app mude. Evite adicionar páginas, componentes ou funcionalidades ao site sem uma necessidade concreta vinda do aplicativo — o objetivo é manter o site simples, rápido e de baixa manutenção.
 
 ## Site publicado
 
@@ -18,6 +22,7 @@ A Sprint 0.1.0 teve foco exclusivo em **arquitetura, organização e componentes
 - **TypeScript** — tipagem em componentes, layouts e utilitários.
 - **CSS puro** — sem frameworks de utilitários (sem Tailwind). Sistema de tema baseado em variáveis CSS (custom properties).
 - **[lucide-static](https://www.npmjs.com/package/lucide-static)** — ícones SVG puros da biblioteca Lucide, sem JavaScript em runtime.
+- **[@astrojs/sitemap](https://docs.astro.build/en/guides/integrations-guide/sitemap/)** — geração automática do sitemap (`sitemap-index.xml`) a cada build.
 
 Nenhuma outra dependência foi adicionada ao projeto.
 
@@ -37,6 +42,7 @@ docs/                   Documentação do projeto
 public/                 Arquivos estáticos servidos como estão
     favicon.svg
     favicon.ico
+    robots.txt            Permite indexação e referencia o sitemap
     images/
         og-home.png          Imagem de Open Graph da Home (1200×630)
 
@@ -62,6 +68,7 @@ src/
         privacy.astro      Política de Privacidade
         terms.astro        Termos de Uso
         support.astro      Suporte
+        404.astro          Página não encontrada (noindex)
     styles/              Sistema de tema e reset global (theme.css, global.css)
     utils/               Funções e constantes auxiliares
         site.ts              Constantes globais do site (inclui contato e versão do app)
@@ -69,6 +76,7 @@ src/
         breakpoints.ts        Breakpoints (espelham theme.css)
         icons.ts              Registro central dos ícones Lucide usados no site
         home-content.ts       Conteúdo textual da Home (Recursos, Por que escolher, Em desenvolvimento, FAQ)
+        support-content.ts    FAQ da página de Suporte (reaproveita o tipo FaqEntry de home-content.ts)
 ```
 
 ### Pastas adicionadas além do briefing original
@@ -95,7 +103,7 @@ O site ficará disponível em `http://localhost:4321`.
 npm run build
 ```
 
-O resultado da build estática é gerado em `./dist`, pronto para publicação em qualquer hospedagem estática (ex.: GitHub Pages, em Sprint futura).
+O resultado da build estática é gerado em `./dist`, pronto para publicação em qualquer hospedagem estática. A build também gera `sitemap-index.xml`/`sitemap-0.xml` automaticamente (via `@astrojs/sitemap`) e copia `robots.txt`.
 
 Para pré-visualizar a build localmente:
 
@@ -135,10 +143,12 @@ Como o repositório **não** é do tipo `<usuário>.github.io` (é um repositór
 - **Páginas** (`src/pages/`): nome do arquivo em `kebab-case`/minúsculo, correspondendo à rota final. Toda página deve usar o `Layout` principal (`src/layouts/Layout.astro`) e informar `title` e `description`.
 - **Estilos**: todo valor de cor, espaçamento, tipografia, raio de borda ou largura de container deve vir das variáveis definidas em `src/styles/theme.css` — não usar valores fixos repetidos diretamente nos componentes.
 - **Breakpoints**: como CSS não permite `var()` dentro de `@media`, os breakpoints são definidos como referência em `theme.css` e replicados em `src/utils/breakpoints.ts` para uso futuro em JavaScript/TypeScript. Ao escrever uma media query, usar o valor literal correspondente ao token documentado.
-- **SEO/Open Graph**: toda página deve fornecer `title` e `description` ao `Layout`; `ogImage` é opcional e só deve ser informado quando a imagem existir de fato — por convenção, sempre 1200×630. Se `title` já começar com o nome do site (`GymLog`), ele é usado como está; caso contrário, o `Layout` adiciona o sufixo ` · GymLog` automaticamente.
+- **SEO/Open Graph**: toda página deve fornecer `title` e `description` ao `Layout`; `ogImage` é opcional e só deve ser informado quando a imagem existir de fato — por convenção, sempre 1200×630. Se `title` já começar com o nome do site (`GymLog`), ele é usado como está; caso contrário, o `Layout` adiciona o sufixo ` · GymLog` automaticamente. Use `noindex` apenas em páginas que não devem ser indexadas (hoje, só `404.astro`).
 - **Ícones**: usar sempre o componente `Icon` (`src/components/Icon.astro`) com um nome já registrado em `src/utils/icons.ts`. Para adicionar um novo ícone, importar o `.svg` correspondente de `lucide-static` nesse arquivo antes de usá-lo. O `Icon` é sempre decorativo (`aria-hidden`) — deve ser usado ao lado de um texto visível que comunique o significado.
 - **Links internos e assets**: nunca usar caminho absoluto fixo (`href="/privacy"`, `src="/images/x.png"`) diretamente — sempre envolver com `withBase()` (`src/utils/paths.ts`), já que o site é publicado sob o subcaminho `/GymLog-Site`. `canonical`, `og:url` e `og:image` já são resolvidos automaticamente pelo `Layout` a partir de `Astro.url`/`Astro.site` e **não** precisam de `withBase()` adicional na URL final.
 - **Acessibilidade**: todo elemento interativo deve permanecer operável por teclado (o indicador de foco global em `global.css` cobre isso automaticamente) e manter contraste mínimo de 4.5:1 (WCAG AA) sobre os fundos do tema.
 - **Conteúdo de seções extensas** (Recursos, Diferenciais, FAQ, etc.): manter em arquivos de dados tipados dentro de `src/utils/` (ex.: `home-content.ts`), em vez de hardcoded dentro da página — facilita ajustes de texto sem tocar em markup ou estilo.
+- **Páginas de texto corrido** (Política de Privacidade, Termos de Uso): diferente das seções da Home, o conteúdo fica escrito diretamente na página como HTML semântico (`h2`, `p`, `ul`) dentro de `<article class="legal-document">` — não em `src/utils/`, pois é prosa, não dados estruturados repetíveis. Os estilos compartilhados (`.legal-document`) ficam em `src/styles/global.css`, garantindo que todas as páginas desse tipo tenham a mesma estrutura visual (ver [DECISIONS.md](./DECISIONS.md)).
+- **E-mail de contato**: sempre usar `SITE.supportEmail` (`src/utils/site.ts`) — nunca escrever o e-mail manualmente em uma página ou componente. Trocar o e-mail oficial do projeto deve exigir editar um único arquivo.
 - **Idioma**: toda documentação, comentários de código e mensagens de commit devem ser escritos em português.
 - **Versionamento**: o projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/). Alterações devem ser registradas em [CHANGELOG.md](./CHANGELOG.md).

@@ -5,6 +5,91 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.0.0] — 2026-08-05
+
+Encerramento do desenvolvimento da versão 1.0 do site institucional. A
+partir desta versão, o projeto entra em **modo de manutenção** — ver
+observação no final desta entrada e a seção correspondente no
+[README.md](../README.md).
+
+### Adicionado
+
+- `public/robots.txt`, permitindo indexação e referenciando o sitemap.
+- Sitemap automático via integração oficial `@astrojs/sitemap`, com a página 404 filtrada do resultado.
+- Página `src/pages/404.astro`, usando o mesmo `Layout` do restante do site, com `noindex` e botão de volta para a Home (primeiro uso real do componente `Button`).
+- Prop `noindex` no `Layout`, usada apenas pela página 404.
+
+### Alterado
+
+- `SITE.url` (`src/utils/site.ts`) corrigida de um domínio fictício (`gymlog.app`, nunca registrado) para a URL real do site publicado.
+
+### Removido
+
+- Dependências `@astrojs/check` e `typescript`, instaladas incidentalmente ao tentar rodar `astro check` e revertidas por não estarem no escopo desta Sprint ("não adicionar bibliotecas apenas para esta Sprint").
+- Ícones não utilizados `shield-check` e `smile` (sobras da seção "Diferenciais", removida na Sprint 0.2.1).
+- Variáveis de tema não utilizadas: `--font-size-2xl`, `--font-size-4xl`, `--font-weight-regular`, `--space-xs`.
+- `SITE.description`, nunca lida em nenhum lugar do código e com texto desatualizado.
+
+### Observações
+
+- Revisão completa de SEO: todas as páginas confirmadas com um único `<h1>`, `title`, `description`, `canonical`, Open Graph e Twitter Card próprios e consistentes.
+- Revisão de acessibilidade: contraste, foco por teclado, `aria-label` e landmarks já atendiam ao padrão do projeto — nenhuma mudança adicional necessária além da limpeza acima.
+- Todos os links internos das 4 páginas validados via automação (sem 404s), sem rolagem horizontal em 390/480/768/1024/1280/1440px.
+- Workflow `.github/workflows/deploy.yml` (Sprint 0.2.2) não foi alterado.
+- Nenhuma nova página, funcionalidade, formulário, Analytics ou domínio próprio foi implementado — Sprint dedicada exclusivamente a acabamento técnico (ver [DECISIONS.md](./DECISIONS.md)).
+- **A partir desta versão, o site é considerado funcionalmente concluído.** Futuras alterações devem refletir mudanças reais no aplicativo GymLog (novas funcionalidades, publicação nas lojas, screenshots oficiais, domínio próprio), não novas funcionalidades do site em si.
+
+## [0.5.0] — 2026-08-05
+
+### Adicionado
+
+- Conteúdo definitivo da página de Suporte (`src/pages/support.astro`): Suporte, Contato, Tempo de resposta, Antes de entrar em contato, Perguntas frequentes, Informações do projeto e Sugestões.
+- `src/utils/support-content.ts` com o FAQ específico de atendimento (`SUPPORT_FAQ`), reaproveitando o tipo `FaqEntry` já existente em `home-content.ts`.
+- Card "Informações do projeto", exibindo nome do app, versão do app (`SITE.appVersion`), versão do site (`package.json`), plataforma e licença — sem nenhum valor duplicado no código.
+- SEO específico da página de Suporte: `title`, `description`, `canonical` e Open Graph próprios (via `Layout`).
+
+### Observações
+
+- Nenhum componente novo foi criado — a página reutiliza `Layout`, `Section`, `Container`, `FAQItem` e as classes `.legal-document` já existentes (ver [DECISIONS.md](./DECISIONS.md)).
+- Esta é a última página institucional obrigatória do site. Todas as páginas (Home, Política de Privacidade, Termos de Uso, Suporte) têm conteúdo definitivo.
+- Nenhum formulário de contato, backend, envio de e-mails, Analytics ou integração com GitHub foi implementado, conforme escopo desta Sprint.
+- Responsividade e navegação validadas em 390px, 480px, 768px, 1024px, 1280px e 1440px, sem rolagem horizontal.
+
+## [0.4.0] — 2026-08-05
+
+### Adicionado
+
+- Conteúdo definitivo dos Termos de Uso (`src/pages/terms.astro`): Introdução, Aceitação, Utilização do aplicativo, Responsabilidade do usuário, Armazenamento dos dados, Funcionalidades Premium, Limitação de responsabilidade, Propriedade intelectual, Alterações dos Termos e Contato.
+- Seção "Funcionalidades Premium" preparada para uma futura monetização (linguagem condicional, sem preços ou planos definidos).
+- Link cruzado entre Termos de Uso e Política de Privacidade, reforçando a coerência entre as duas páginas.
+- SEO específico dos Termos: `title`, `description`, `canonical` e Open Graph próprios (via `Layout`).
+
+### Alterado
+
+- **E-mail oficial de suporte atualizado em todo o projeto**: de `suporte@gymlog.app` para `gymlog.support@gmail.com`, alterado em um único ponto (`SITE.supportEmail`, `src/utils/site.ts`) e propagado automaticamente para `Footer`, Política de Privacidade e Termos de Uso.
+- Estilos de documento legal (antes locais em `privacy.astro`) extraídos para `src/styles/global.css` como classes `.legal-document`, reutilizadas por `privacy.astro` e `terms.astro` (ver [DECISIONS.md](./DECISIONS.md)).
+
+### Observações
+
+- Nenhuma referência ao e-mail antigo restou no projeto (confirmado por busca em todos os arquivos).
+- Nenhuma funcionalidade Premium, assinatura, formulário de contato, Analytics ou sistema de consentimento foi implementada — apenas a preparação textual dos Termos.
+- Página de Suporte segue com conteúdo temporário (ver [ROADMAP.md](./ROADMAP.md)).
+- Responsividade e navegação (incluindo o novo link cruzado) validadas em 390px, 768px, 1024px, 1280px e 1440px, sem rolagem horizontal.
+
+## [0.3.0] — 2026-08-05
+
+### Adicionado
+
+- Conteúdo definitivo da Política de Privacidade (`src/pages/privacy.astro`): Introdução, Dados coletados, Dados que não coletamos, Armazenamento, Compartilhamento de dados, Direitos do usuário, Segurança, Alterações nesta Política e Contato.
+- SEO específico da página: `title`, `description`, `canonical` e Open Graph próprios (via `Layout`).
+
+### Observações
+
+- O texto reflete exclusivamente o comportamento atual do GymLog (100% offline, sem conta/login, sem servidores próprios, backup manual pelo usuário) — nenhuma funcionalidade inexistente foi mencionada (ver [DECISIONS.md](./DECISIONS.md)).
+- E-mail de contato reaproveitado de `SITE.supportEmail` (`src/utils/site.ts`), ainda marcado como temporário — nenhum e-mail novo foi criado.
+- Termos de Uso e Suporte seguem com conteúdo temporário (ver [ROADMAP.md](./ROADMAP.md)).
+- Responsividade e navegação validadas em 390px, 768px, 1024px, 1280px e 1440px, sem rolagem horizontal.
+
 ## [0.2.2] — 2026-08-05
 
 ### Adicionado

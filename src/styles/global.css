@@ -84,3 +84,26 @@ main {
   display: block;
   min-height: 60vh;
 }
+
+/*
+ * Documento legal (Política de Privacidade, Termos de Uso): estilos
+ * compartilhados para garantir a mesma estrutura visual, tipografia e
+ * espaçamento entre as páginas institucionais de texto corrido.
+ */
+.legal-document {
+  max-width: 42rem;
+}
+
+.legal-document__header {
+  margin-bottom: var(--space-lg);
+}
+
+.legal-document__updated {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.legal-document h2 {
+  font-size: var(--font-size-xl);
+  margin-top: var(--space-2xl);
+}

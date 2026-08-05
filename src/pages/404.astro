@@ -1,0 +1,46 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Section from "../components/Section.astro";
+import Container from "../components/Container.astro";
+import Button from "../components/Button.astro";
+import { withBase } from "../utils/paths";
+---
+
+<Layout
+  title="Página não encontrada"
+  description="A página que você procura não existe ou foi movida. Volte para a página inicial do GymLog."
+  noindex
+>
+  <Section ariaLabel="Página não encontrada">
+    <Container>
+      <div class="not-found">
+        <p class="not-found__kicker">404</p>
+        <h1>Página não encontrada</h1>
+        <p class="not-found__description">
+          A página que você procura não existe ou foi movida. Verifique o
+          endereço ou volte para a página inicial.
+        </p>
+        <Button href={withBase("/")}>Voltar para o início</Button>
+      </div>
+    </Container>
+  </Section>
+</Layout>
+
+<style>
+  .not-found {
+    max-width: 32rem;
+  }
+
+  .not-found__kicker {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-sm);
+  }
+
+  .not-found__description {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-lg);
+  }
+</style>
