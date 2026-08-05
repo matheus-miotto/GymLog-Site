@@ -4,6 +4,70 @@ Registro das decisões de arquitetura tomadas ao longo do projeto, com o
 motivo por trás de cada uma. Novas decisões relevantes devem ser
 adicionadas aqui nas Sprints em que forem tomadas.
 
+## Sprint 0.2.2 — Publicação automática no GitHub Pages
+
+### `site` e `base` definitivos, sem valores temporários
+
+`astro.config.mjs` foi configurado com:
+
+```js
+site: 'https://matheus-miotto.github.io',
+base: '/GymLog-Site',
+output: 'static',
+```
+
+O usuário e o nome do repositório foram confirmados a partir do remote Git
+já configurado no projeto (`origin` apontando para
+`github.com/matheus-miotto/GymLog-Site`), conforme a documentação oficial
+do Astro para GitHub Pages: como o repositório **não** é do tipo
+`<usuário>.github.io` (é um repositório de projeto), `site` recebe apenas
+o domínio do GitHub Pages e `base` recebe `/GymLog-Site` — sem essa
+combinação, o site funcionaria apenas na raiz do domínio, o que não é o
+caso aqui.
+
+**Motivo de não haver uma segunda opção considerada**: a alternativa
+seria publicar em um domínio próprio (`base: '/'` + `public/CNAME`), mas
+domínio personalizado está explicitamente fora do escopo desta Sprint.
+
+### Helper `withBase()` centralizando o prefixo de `base`
+
+Como `base` passou a ser um subcaminho (`/GymLog-Site`), todo `href`/`src`
+absoluto fixo (`"/privacy"`, `"/favicon.svg"`, `"/images/og-home.png"`)
+pararia de funcionar em produção — apontaria para a raiz do domínio do
+GitHub Pages, não para dentro do subcaminho do repositório. Em vez de
+espalhar `import.meta.env.BASE_URL` manualmente em cada componente, foi
+criado `src/utils/paths.ts` com uma função `withBase(path)` única, usada
+em `Layout`, `Header`, `Footer` e `index.astro`.
+
+**Motivo**: consistente com a convenção já adotada no projeto de
+centralizar lógica reaproveitável em `src/utils/` (ver `site.ts`,
+`icons.ts`). Uma única função testável evita repetir a mesma lógica de
+normalização (barra inicial/final) em múltiplos arquivos e reduz o risco
+de esquecer o prefixo em um link novo no futuro.
+
+Importante: `Astro.url.pathname` **já inclui** o `base` automaticamente
+(comportamento confirmado via build local — ver `docs/README.md`), então
+`canonical`, `og:url` e `og:image` **não** precisam passar por
+`withBase()` na própria URL final — apenas o caminho relativo do
+`ogImage` passado para o `Layout` precisa (ele é resolvido depois contra
+`Astro.site`).
+
+### Workflow oficial `withastro/action`, sem workflow customizado
+
+`.github/workflows/deploy.yml` usa o fluxo oficial recomendado pela
+documentação do Astro para GitHub Pages: `actions/checkout` →
+`withastro/action` (instala dependências, roda `astro build` e faz upload
+do artefato) → `actions/deploy-pages`.
+
+**Motivo**: o projeto não usa nenhum passo de build especial (sem
+adapter, sem monorepo, sem variáveis de ambiente de build) — o template
+oficial atende integralmente, e o próprio briefing desta Sprint pede para
+não criar um workflow customizado quando o oficial for suficiente. A
+alternativa seria montar manualmente os passos
+`actions/upload-pages-artifact` + `actions/deploy-pages` com `npm ci` e
+`npm run build`; foi descartada por ser estritamente mais verbosa sem
+nenhum ganho, já que `withastro/action` faz exatamente isso internamente.
+
 ## Sprint 0.2.1 — Acabamento da Home
 
 ### Seção "Diferenciais" substituída por "Por que escolher o GymLog?"

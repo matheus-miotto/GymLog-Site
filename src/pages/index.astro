@@ -13,12 +13,13 @@ import {
   UPCOMING_FEATURES,
   FAQ,
 } from "../utils/home-content";
+import { withBase } from "../utils/paths";
 ---
 
 <Layout
   title="GymLog — Registre treinos e acompanhe sua evolução física"
   description="O GymLog ajuda você a registrar treinos, acompanhar sua evolução física e organizar seus ciclos de treino — rápido, intuitivo e 100% offline."
-  ogImage="/images/og-home.png"
+  ogImage={withBase("/images/og-home.png")}
   ogImageAlt="GymLog — aplicativo para registrar treinos e acompanhar sua evolução física"
 >
   <HeroSection />

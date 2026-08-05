@@ -1,6 +1,7 @@
 ---
 import Container from "./Container.astro";
 import { SITE } from "../utils/site";
+import { withBase } from "../utils/paths";
 import pkg from "../../package.json";
 
 const year = new Date().getFullYear();
@@ -26,7 +27,7 @@ const links = [
       </div>
 
       <nav class="footer__nav" aria-label="Links institucionais">
-        {links.map((link) => <a href={link.href}>{link.label}</a>)}
+        {links.map((link) => <a href={withBase(link.href)}>{link.label}</a>)}
       </nav>
 
       <div class="footer__contact">

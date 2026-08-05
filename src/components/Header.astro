@@ -1,6 +1,7 @@
 ---
 import Container from "./Container.astro";
 import Icon from "./Icon.astro";
+import { withBase } from "../utils/paths";
 
 const { pathname } = Astro.url;
 
@@ -19,7 +20,7 @@ const links = [
 <header class="header">
   <Container as="div">
     <div class="header__inner">
-      <a href="/" class="header__logo">GymLog</a>
+      <a href={withBase("/")} class="header__logo">GymLog</a>
 
       {/*
         Menu mobile via "checkbox hack": alterna a navegação usando
@@ -53,8 +54,8 @@ const links = [
         {
           links.map((link) => (
             <a
-              href={link.href}
-              aria-current={pathname === link.href ? "page" : undefined}
+              href={withBase(link.href)}
+              aria-current={pathname === withBase(link.href) ? "page" : undefined}
             >
               {link.label}
             </a>

@@ -18,8 +18,8 @@ Os escopos abaixo são iniciais e podem ser ajustados conforme o projeto evolui.
 - **Sprint 0.5 — Página de Suporte**
   FAQ, formulário de contato e canais de suporte.
 
-- **Sprint 0.6 — SEO e GitHub Pages**
-  Ajuste fino de SEO (imagens de Open Graph, sitemap), configuração de `site`/`base` no Astro e workflow de publicação via GitHub Actions.
+- **Sprint 0.6 — SEO e GitHub Pages** 🔶 parcialmente concluída
+  Configuração de `site`/`base` no Astro e workflow de publicação via GitHub Actions concluídos antecipadamente na Sprint 0.2.2. Falta apenas o ajuste fino adicional de SEO (ex.: sitemap).
 
 - **Sprint 0.7 — Polimento visual**
   Animações, refinamento de identidade visual e responsividade.

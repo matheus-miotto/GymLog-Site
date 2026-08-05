@@ -2,6 +2,7 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE } from "../utils/site";
+import { withBase } from "../utils/paths";
 import "../styles/theme.css";
 import "../styles/global.css";
 
@@ -32,7 +33,12 @@ const {
 const pageTitle = title.startsWith(SITE.name)
   ? title
   : `${title} · ${SITE.name}`;
+// Astro.url.pathname já reflete o `base` configurado (ex.: /GymLog-Site/...),
+// então basta combiná-lo com Astro.site para obter a URL pública final.
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
+// `ogImage` chega como caminho absoluto ("/images/x.png") já prefixado
+// com o base pelas páginas (via `withBase`), então também pode ser
+// resolvido diretamente contra Astro.site.
 const ogImageURL = ogImage
   ? new URL(ogImage, Astro.site ?? SITE.url)
   : undefined;
@@ -42,8 +48,8 @@ const ogImageURL = ogImage
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link rel="icon" href={withBase("/favicon.ico")} />
     <meta name="generator" content={Astro.generator} />
 
     <title>{pageTitle}</title>

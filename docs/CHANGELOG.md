@@ -5,6 +5,24 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.2.2] — 2026-08-05
+
+### Adicionado
+
+- `.github/workflows/deploy.yml`: publicação automática no GitHub Pages a cada `git push` para `main`, usando o fluxo oficial do Astro (`withastro/action` + `actions/deploy-pages`).
+- `src/utils/paths.ts` (`withBase`): garante que links internos e assets (favicon, imagem de Open Graph) funcionem corretamente sob o subcaminho do GitHub Pages.
+
+### Alterado
+
+- `astro.config.mjs`: `site`, `base` e `output` configurados definitivamente para `https://matheus-miotto.github.io/GymLog-Site/`.
+- `Header`, `Footer` e `Layout`: todos os links internos e referências a assets (favicon, imagem de Open Graph) passaram a usar `withBase()`, em vez de caminhos absolutos fixos.
+
+### Observações
+
+- Build (`npm run build`) e navegação completa validados localmente simulando o `base` do GitHub Pages (`npm run preview`, que já serve em `/GymLog-Site/`), sem erros de console ou requisições quebradas.
+- Nenhuma mudança de layout, conteúdo ou componente — Sprint dedicada exclusivamente à infraestrutura de publicação (ver [DECISIONS.md](./DECISIONS.md)).
+- Domínio personalizado segue fora do escopo (ver [ROADMAP.md](./ROADMAP.md)).
+
 ## [0.2.1] — 2026-08-05
 
 ### Adicionado
