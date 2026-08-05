@@ -1,0 +1,24 @@
+---
+/**
+ * Container reutilizável que centraliza o conteúdo e aplica
+ * uma largura máxima e respiro lateral consistentes.
+ */
+interface Props {
+  as?: keyof HTMLElementTagNameMap;
+}
+
+const { as: Tag = "div" } = Astro.props;
+---
+
+<Tag class="container">
+  <slot />
+</Tag>
+
+<style>
+  .container {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-md);
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+/**
+ * Seção genérica com espaçamento vertical padronizado.
+ * Usada para compor as páginas em blocos consistentes.
+ */
+interface Props {
+  id?: string;
+  ariaLabel?: string;
+}
+
+const { id, ariaLabel } = Astro.props;
+---
+
+<section id={id} aria-label={ariaLabel} class="section">
+  <slot />
+</section>
+
+<style>
+  .section {
+    padding-block: var(--space-3xl);
+  }
+
+  @media (max-width: 640px) {
+    .section {
+      padding-block: var(--space-xl);
+    }
+  }
+</style>

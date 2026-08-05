@@ -1,0 +1,61 @@
+---
+import Icon from "./Icon.astro";
+
+/**
+ * Item de FAQ usando <details>/<summary> nativos — acordeão totalmente
+ * funcional sem nenhum JavaScript em runtime.
+ */
+interface Props {
+  question: string;
+  answer: string;
+}
+
+const { question, answer } = Astro.props;
+---
+
+<details class="faq-item">
+  <summary class="faq-item__question">
+    <span>{question}</span>
+    <span class="faq-item__chevron">
+      <Icon name="chevron-down" size={20} />
+    </span>
+  </summary>
+  <p class="faq-item__answer">{answer}</p>
+</details>
+
+<style>
+  .faq-item {
+    border-bottom: 1px solid var(--color-border);
+    padding-block: var(--space-sm);
+  }
+
+  .faq-item__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    cursor: pointer;
+    list-style: none;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .faq-item__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item__chevron {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+  }
+
+  .faq-item[open] .faq-item__chevron {
+    transform: rotate(180deg);
+  }
+
+  .faq-item__answer {
+    margin: var(--space-2xs) 0 0;
+    color: var(--color-text-secondary);
+  }
+</style>

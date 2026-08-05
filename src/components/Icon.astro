@@ -1,0 +1,36 @@
+---
+import { ICONS, type IconName } from "../utils/icons";
+
+/**
+ * Renderiza um ícone da biblioteca Lucide como SVG puro (inline),
+ * sem qualquer JavaScript em runtime. A cor segue `currentColor`,
+ * herdando a cor de texto do elemento pai.
+ */
+interface Props {
+  name: IconName;
+  size?: number;
+}
+
+const { name, size = 24 } = Astro.props;
+const svg = ICONS[name];
+---
+
+{/* Ícone sempre decorativo: nesta biblioteca é usado ao lado de um texto visível (título, pergunta, rótulo) que já comunica o significado. */}
+<span
+  class="icon"
+  aria-hidden="true"
+  style={`--icon-size: ${size}px`}
+  set:html={svg}
+/>
+
+<style>
+  .icon {
+    display: inline-flex;
+    color: inherit;
+  }
+
+  .icon :global(svg) {
+    width: var(--icon-size, 24px);
+    height: var(--icon-size, 24px);
+  }
+</style>

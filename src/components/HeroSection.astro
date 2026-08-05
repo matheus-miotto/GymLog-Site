@@ -1,0 +1,85 @@
+---
+import Section from "./Section.astro";
+import Container from "./Container.astro";
+import StoreBadge from "./StoreBadge.astro";
+import AppMockup from "./AppMockup.astro";
+---
+
+<Section ariaLabel="Apresentação do GymLog">
+  <Container>
+    <div class="hero">
+      <div class="hero__content">
+        <p class="hero__kicker">GymLog</p>
+        <h1 class="hero__title">Treine melhor.<br />Acompanhe sua evolução.</h1>
+        <p class="hero__subtitle">
+          O GymLog ajuda você a registrar treinos, acompanhar sua evolução
+          física e organizar seus ciclos de treino, tudo de forma rápida,
+          intuitiva e totalmente offline.
+        </p>
+        <div class="hero__actions">
+          <StoreBadge store="App Store" />
+          <StoreBadge store="Google Play" />
+        </div>
+      </div>
+      <div class="hero__media">
+        <AppMockup />
+      </div>
+    </div>
+  </Container>
+</Section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: var(--space-2xl);
+  }
+
+  .hero__content {
+    max-width: 42rem;
+  }
+
+  .hero__kicker {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+  }
+
+  .hero__title {
+    font-size: var(--font-size-5xl);
+    margin-bottom: var(--space-md);
+  }
+
+  .hero__subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 60ch;
+    margin-bottom: var(--space-lg);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  @media (min-width: 768px) {
+    .hero {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .hero__subtitle {
+      font-size: var(--font-size-base);
+    }
+  }
+</style>

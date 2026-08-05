@@ -1,0 +1,103 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Section from "../components/Section.astro";
+import Container from "../components/Container.astro";
+import HeroSection from "../components/HeroSection.astro";
+import FeatureGrid from "../components/FeatureGrid.astro";
+import FeatureCard from "../components/FeatureCard.astro";
+import ValueProp from "../components/ValueProp.astro";
+import FAQItem from "../components/FAQItem.astro";
+import {
+  FEATURES,
+  VALUE_PROPS,
+  UPCOMING_FEATURES,
+  FAQ,
+} from "../utils/home-content";
+---
+
+<Layout
+  title="GymLog — Registre treinos e acompanhe sua evolução física"
+  description="O GymLog ajuda você a registrar treinos, acompanhar sua evolução física e organizar seus ciclos de treino — rápido, intuitivo e 100% offline."
+  ogImage="/images/og-home.png"
+  ogImageAlt="GymLog — aplicativo para registrar treinos e acompanhar sua evolução física"
+>
+  <HeroSection />
+
+  <Section ariaLabel="Recursos do GymLog">
+    <Container>
+      <h2 class="section-title">Recursos</h2>
+      <FeatureGrid>
+        {
+          FEATURES.map((feature) => (
+            <FeatureCard
+              icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+            />
+          ))
+        }
+      </FeatureGrid>
+    </Container>
+  </Section>
+
+  <Section ariaLabel="Por que escolher o GymLog">
+    <Container>
+      <h2 class="section-title">Por que escolher o GymLog?</h2>
+      <FeatureGrid>
+        {
+          VALUE_PROPS.map((item) => (
+            <ValueProp
+              icon={item.icon}
+              title={item.title}
+              description={item.description}
+            />
+          ))
+        }
+      </FeatureGrid>
+    </Container>
+  </Section>
+
+  <Section ariaLabel="Em desenvolvimento">
+    <Container>
+      <h2 class="section-title" style="margin-bottom: var(--space-sm)">
+        Em desenvolvimento
+      </h2>
+      <p class="section-intro">
+        O GymLog está em evolução constante. Estas são algumas frentes em
+        que já estamos trabalhando:
+      </p>
+      <FeatureGrid compact>
+        {
+          UPCOMING_FEATURES.map((item) => (
+            <FeatureCard icon={item.icon} title={item.title} compact upcoming />
+          ))
+        }
+      </FeatureGrid>
+    </Container>
+  </Section>
+
+  <Section ariaLabel="Perguntas frequentes">
+    <Container>
+      <h2 class="section-title">Perguntas frequentes</h2>
+      <div class="faq-list">
+        {FAQ.map((item) => <FAQItem question={item.question} answer={item.answer} />)}
+      </div>
+    </Container>
+  </Section>
+</Layout>
+
+<style>
+  .section-title {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-xl);
+  }
+
+  .section-intro {
+    max-width: 60ch;
+    margin-bottom: var(--space-xl);
+  }
+
+  .faq-list {
+    max-width: 42rem;
+  }
+</style>

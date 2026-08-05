@@ -1,0 +1,112 @@
+---
+import Container from "./Container.astro";
+import { SITE } from "../utils/site";
+import pkg from "../../package.json";
+
+const year = new Date().getFullYear();
+
+const links = [
+  { href: "/privacy", label: "Política de Privacidade" },
+  { href: "/terms", label: "Termos de Uso" },
+  { href: "/support", label: "Suporte" },
+];
+---
+
+<footer class="footer">
+  <Container as="div">
+    {/*
+      Grid de 3 colunas (marca, navegação, contato). Comporta uma quarta
+      coluna com os selos de loja (App Store / Google Play) quando os
+      apps forem publicados, sem precisar redesenhar o Footer.
+    */}
+    <div class="footer__top">
+      <div class="footer__brand">
+        <p class="footer__logo">GymLog</p>
+        <p class="footer__tagline">Treine melhor. Acompanhe sua evolução.</p>
+      </div>
+
+      <nav class="footer__nav" aria-label="Links institucionais">
+        {links.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+
+      <div class="footer__contact">
+        <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>
+        {SITE.githubUrl && (
+          <a href={SITE.githubUrl} target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+        )}
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p class="footer__copy">© {year} GymLog. Todos os direitos reservados.</p>
+      <p class="footer__version">
+        Site v{pkg.version} · App v{SITE.appVersion}
+      </p>
+    </div>
+  </Container>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+  }
+
+  .footer__top {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    padding-block-start: var(--space-2xl);
+    padding-block-end: var(--space-lg);
+  }
+
+  .footer__logo {
+    margin: 0 0 var(--space-3xs);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .footer__tagline {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .footer__nav,
+  .footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .footer__nav a,
+  .footer__contact a {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .footer__nav a:hover,
+  .footer__contact a:hover {
+    color: var(--color-text-primary);
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding-block: var(--space-md);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .footer__copy,
+  .footer__version {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+  }
+</style>

@@ -1,0 +1,115 @@
+---
+/**
+ * Ilustração do aplicativo dentro de uma moldura de smartphone.
+ *
+ * Sem `src`, renderiza um placeholder abstrato (decorativo) representando
+ * uma tela de evolução de treino. Quando a captura oficial do aplicativo
+ * existir, basta passar `src` (e um `alt` descritivo) — a moldura e a
+ * posição no Hero permanecem as mesmas, sem qualquer mudança estrutural.
+ */
+interface Props {
+  src?: string;
+  alt?: string;
+}
+
+const { src, alt = "Prévia da interface do aplicativo GymLog" } = Astro.props;
+---
+
+{
+  src ? (
+    <div class="app-mockup">
+      <div class="app-mockup__frame">
+        <img
+          src={src}
+          alt={alt}
+          class="app-mockup__image"
+          width="320"
+          height="640"
+        />
+      </div>
+    </div>
+  ) : (
+    <div class="app-mockup" aria-hidden="true">
+      <div class="app-mockup__frame">
+        <div class="app-mockup__placeholder">
+          <span class="app-mockup__bar" />
+          <div class="app-mockup__chart">
+            <span style="--bar-height: 35%" />
+            <span style="--bar-height: 55%" />
+            <span style="--bar-height: 45%" />
+            <span style="--bar-height: 75%" />
+            <span style="--bar-height: 60%" />
+            <span style="--bar-height: 85%" />
+          </div>
+          <span class="app-mockup__row" />
+          <span class="app-mockup__row" />
+          <span class="app-mockup__row" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .app-mockup {
+    display: flex;
+    justify-content: center;
+  }
+
+  .app-mockup__frame {
+    width: 100%;
+    max-width: 260px;
+    aspect-ratio: 9 / 19;
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+    overflow: hidden;
+  }
+
+  .app-mockup__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  .app-mockup__placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    height: 100%;
+  }
+
+  .app-mockup__bar {
+    display: block;
+    width: 45%;
+    height: 0.75rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-border);
+  }
+
+  .app-mockup__chart {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-2xs);
+    height: 40%;
+    padding: var(--space-sm) 0;
+    border-block: 1px solid var(--color-border);
+  }
+
+  .app-mockup__chart span {
+    flex: 1;
+    height: var(--bar-height);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background-color: var(--color-primary);
+  }
+
+  .app-mockup__row {
+    display: block;
+    height: 1.5rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-elevated);
+  }
+</style>

@@ -1,0 +1,176 @@
+---
+import Container from "./Container.astro";
+import Icon from "./Icon.astro";
+
+const { pathname } = Astro.url;
+
+/**
+ * Links de navegação principal. Adicionar novas páginas aqui
+ * automaticamente as inclui no Header (desktop e mobile).
+ */
+const links = [
+  { href: "/", label: "Início" },
+  { href: "/privacy", label: "Política" },
+  { href: "/terms", label: "Termos" },
+  { href: "/support", label: "Suporte" },
+];
+---
+
+<header class="header">
+  <Container as="div">
+    <div class="header__inner">
+      <a href="/" class="header__logo">GymLog</a>
+
+      {/*
+        Menu mobile via "checkbox hack": alterna a navegação usando
+        apenas CSS (seletor ~ + :checked), sem nenhum JavaScript.
+        O checkbox fica visualmente oculto mas acessível por teclado.
+      */}
+      <input
+        type="checkbox"
+        id="nav-toggle"
+        class="header__toggle-input"
+        aria-controls="primary-navigation"
+      />
+      <label
+        for="nav-toggle"
+        class="header__toggle-label"
+        aria-label="Abrir menu de navegação"
+      >
+        <span class="header__toggle-icon header__toggle-icon--menu">
+          <Icon name="menu" size={22} />
+        </span>
+        <span class="header__toggle-icon header__toggle-icon--close">
+          <Icon name="x" size={22} />
+        </span>
+      </label>
+
+      <nav
+        class="header__nav"
+        id="primary-navigation"
+        aria-label="Navegação principal"
+      >
+        {
+          links.map((link) => (
+            <a
+              href={link.href}
+              aria-current={pathname === link.href ? "page" : undefined}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </Container>
+</header>
+
+<style>
+  .header {
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+  }
+
+  .header__inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--space-sm);
+  }
+
+  .header__logo {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .header__logo:hover {
+    color: var(--color-primary);
+  }
+
+  /* Checkbox visualmente oculto, mas mantido acessível (foco/leitor de tela) */
+  .header__toggle-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .header__toggle-label {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+
+  .header__toggle-input:focus-visible ~ .header__toggle-label {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .header__toggle-icon--close {
+    display: none;
+  }
+
+  .header__toggle-input:checked ~ .header__toggle-label .header__toggle-icon--menu {
+    display: none;
+  }
+
+  .header__toggle-input:checked ~ .header__toggle-label .header__toggle-icon--close {
+    display: inline-flex;
+  }
+
+  .header__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .header__nav a {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .header__nav a:hover,
+  .header__nav a[aria-current="page"] {
+    color: var(--color-text-primary);
+  }
+
+  @media (max-width: 767px) {
+    .header__toggle-label {
+      display: inline-flex;
+    }
+
+    .header__nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+      background-color: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .header__toggle-input:checked ~ .header__nav {
+      display: flex;
+    }
+
+    .header__nav a {
+      width: 100%;
+    }
+  }
+</style>
