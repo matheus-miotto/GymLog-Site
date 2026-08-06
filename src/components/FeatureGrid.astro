@@ -3,14 +3,9 @@
  * Grid responsivo para organizar FeatureCard, sem breakpoints manuais:
  * as colunas se ajustam automaticamente à largura disponível.
  */
-interface Props {
-  compact?: boolean;
-}
-
-const { compact = false } = Astro.props;
 ---
 
-<div class:list={["feature-grid", { "feature-grid--compact": compact }]}>
+<div class="feature-grid">
   <slot />
 </div>
 
@@ -19,10 +14,5 @@ const { compact = false } = Astro.props;
     display: grid;
     gap: var(--space-lg);
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  }
-
-  .feature-grid--compact {
-    gap: var(--space-md);
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 </style>

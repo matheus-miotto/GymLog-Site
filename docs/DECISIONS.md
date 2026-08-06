@@ -4,6 +4,396 @@ Registro das decisões de arquitetura tomadas ao longo do projeto, com o
 motivo por trás de cada uma. Novas decisões relevantes devem ser
 adicionadas aqui nas Sprints em que forem tomadas.
 
+## Sprint 1.4.0 — Refinamento visual da Home
+
+Sprint de polimento puro: nenhuma seção nova, nenhum texto alterado.
+O objetivo foi auditar a Home inteira (espaçamento, tipografia, cards,
+screenshots, hierarquia) e refinar o que já existia. Resumo abaixo.
+
+### `tight` como prop, não como mudança global de `Section`
+
+O maior problema de espaçamento encontrado na auditoria: o fim do Hero
+e o início de "Recursos" somavam dois `padding-block` de 96px (o token
+`--space-3xl`, usado por todo `Section` do site) — um vão de 192px,
+visivelmente maior que qualquer outro respiro da página. `Section` é
+compartilhado por **todas** as páginas (Home, Política, Termos,
+Suporte, 404); reduzir `--space-3xl` ou o padding base de `Section`
+diretamente mudaria o ritmo vertical de páginas que a Sprint não pediu
+para tocar. Em vez disso, `Section` ganhou uma prop opcional `tight`
+(reduz só `padding-block-start`, default `false`) — todas as páginas
+que não passam essa prop continuam pixel-idênticas a antes; só a seção
+"Recursos" da Home usa `tight`.
+
+**Motivo**: a Sprint pediu explicitamente para não alterar arquitetura
+e focar na Home. Uma prop opcional aditiva, com default que preserva o
+comportamento atual, é uma mudança local e reversível — o oposto de
+editar um token global usado por 5 páginas para resolver um problema
+de uma seção específica de uma delas.
+
+### Screenshots reposicionadas: de "centralizadas no bloco" para "depois da descrição"
+
+Antes, a `grid-area` das screenshots ocupava todas as linhas do Hero
+(marca, título, subtítulo, pontos de confiança, botões) e ficava
+centralizada verticalmente nesse espaço inteiro — na prática, a tela
+principal aparecia ao lado do título e do subtítulo ao mesmo tempo, sem
+uma relação clara de "o que vem depois do quê". O briefing pediu uma
+ordem de leitura específica: logo → título → descrição → screenshots →
+botões. Para expressar isso mesmo no layout de duas colunas do desktop,
+a área das screenshots agora começa na linha do subtítulo (não na da
+marca/título) — `grid-template-areas` deixa uma célula vazia (`.`) nas
+linhas de marca e título da segunda coluna.
+
+**Motivo**: em duas colunas, é impossível ter uma ordem de leitura
+100% linear (marca/título e screenshots sempre vão aparecer lado a
+lado em algum ponto) — mas é possível controlar *em qual altura* cada
+elemento aparece. Fazer a screenshot "nascer" na altura do subtítulo
+em vez de na altura da marca aproxima o layout da leitura pedida: o
+olhar encontra título e descrição isolados por um instante antes das
+telas aparecerem.
+
+### Duas sombras, não uma: `--shadow-md` só para o elemento principal
+
+`--shadow-sm` (a sombra padrão de hover de cards) já era usada em todo
+lugar — inclusive nas screenshots. Isso achatava a hierarquia visual:
+cards de "Recursos" e as telas do aplicativo, o elemento que deveria
+ser o maior destaque da página, tinham a mesma profundidade. Criamos
+`--shadow-md` (mais forte) só para a tela principal da composição; as
+duas telas laterais continuam com `--shadow-sm`.
+
+**Motivo**: o briefing pediu "apenas um foco principal por seção" e
+para refinar especificamente a profundidade das screenshots. Duas
+sombras diferentes, uma para o elemento em destaque e outra para os
+elementos de apoio, comunica essa hierarquia sem precisar de nenhum
+elemento decorativo novo (glow, gradiente etc.) — que o projeto já
+evita desde a Sprint 1.2.
+
+### Espaçamento do Hero: de `row-gap` uniforme para margens deliberadas
+
+O Hero antes usava um único `row-gap` para todas as transições (marca
+→título, título→subtítulo, subtítulo→ações). Passou a usar
+`margin-bottom` individual por elemento — maior entre título e
+subtítulo (`--space-sm`) do que entre marca e título (`--space-md`), e
+maior ainda depois do subtítulo e depois das screenshots (`--space-lg`)
+antes de pontos de confiança e botões.
+
+**Motivo**: o briefing pediu que "o usuário perceba hierarquia clara
+apenas pelo espaçamento" — um `row-gap` uniforme comunica que todos os
+elementos têm a mesma relação entre si, o que não é verdade (título e
+subtítulo são um par; pontos de confiança e botões são outro,
+secundário). Espaçamento desigual e intencional é o que faz esses
+agrupamentos ficarem visíveis sem nenhum texto ou marcador adicional.
+
+## Sprint 1.3.0 — Screenshots reais no lugar do mockup
+
+Capturas reais do aplicativo GymLog ficaram disponíveis
+(`public/images/screenshots/{dark,light}/*.jpg`), tornando o mockup
+ilustrativo do `AppMockup` (Sprint 1.2.1) obsoleto — o próprio briefing
+pediu para substituí-lo completamente. Resumo das decisões abaixo.
+
+### Troca de tema das screenshots: 2 `<img>` por tela, não `<picture>`
+
+Cada uma das 3 telas da composição é renderizada como dois elementos
+`<img>` (um `dark`, um `light`); qual fica visível é decidido por CSS
+puro, usando os mesmos seletores que `theme.css` já usa para cores
+(`[data-theme="light"]`, e `@media (prefers-color-scheme: light)` para
+quando não há tema salvo). A alternativa mais óbvia — um `<picture>`
+com `<source media="(prefers-color-scheme: dark)">` — foi descartada:
+`media` em `<source>` só reage a media queries reais (viewport, SO), e
+o GymLog tem um terceiro estado ("claro"/"escuro" escolhidos
+manualmente, persistidos em `localStorage`, que **sobrepõem** a
+preferência do sistema). Um usuário com o SO em modo claro que escolheu
+"Escuro" manualmente no site precisa ver as screenshots escuras — isso
+só é possível espelhando o mesmo `data-theme` que já dirige as
+cores, não reagindo à preferência do sistema diretamente.
+
+**Motivo**: o briefing pediu explicitamente para reaproveitar o sistema
+de temas existente, não criar uma implementação paralela. `<picture>` +
+`prefers-color-scheme` seria, na prática, um segundo sistema de tema,
+ignorando a escolha manual do usuário justamente no elemento mais
+vistoso da Home.
+
+**Custo aceito**: a tela central (`home`) tem as duas variantes
+(`dark`+`light`) carregadas com `loading="eager"`, já que não é
+possível saber em build time (site estático) qual tema o visitante
+escolherá em tempo de execução — carregar as duas garante que a
+imagem certa já esteja pronta assim que o tema for aplicado, sem
+flash de imagem ausente. Isso custa uma imagem extra (~algumas dezenas
+de KB) só na tela principal; as duas telas laterais usam
+`loading="lazy"` nas duas variantes, então esse custo não se repete 3x.
+
+### Por que só 3 das 5 capturas disponíveis foram usadas
+
+`public/images/screenshots/` tem 5 telas (`home`, `treino`,
+`exercicios`, `evolucao`, `perfil`); a composição usa 3: `treino`
+(esquerda), `home` (centro), `evolucao` (direita). `exercicios` e
+`perfil` continuam disponíveis em `public/` para uso futuro (ex.: uma
+seção mais adiante na Home, ou a página de Suporte), mas não foram
+encaixadas nesta composição.
+
+**Motivo**: o briefing pediu exatamente 3 telas no desktop. As 3
+escolhidas mapeiam diretamente para os 3 cards já existentes na seção
+"Recursos" logo abaixo ("Registre cada treino", "Acompanhe sua
+evolução", tela inicial cobrindo a visão geral/organização) — a Hero
+mostra o produto, a seção seguinte nomeia o que foi mostrado. Adicionar
+uma 4ª ou 5ª tela só para usar todos os arquivos disponíveis seria
+"encher espaço", o oposto do princípio "menos é melhor" já estabelecido
+na Sprint 1.2.0.
+
+### Sem moldura de celular
+
+O `AppMockup` anterior desenhava um bezel (moldura fina simulando um
+smartphone) ao redor do conteúdo. O `ScreenshotShowcase` não tem
+moldura alguma — cada captura é exibida com apenas `border-radius`
+(igual ao raio de borda do próprio app), uma borda de 1px discreta e
+`box-shadow` sutil (`--shadow-sm`, o mesmo token já usado em todo o
+projeto).
+
+**Motivo**: o briefing foi explícito — "não criar molduras falsas de
+celular... as screenshots são o próprio produto". As capturas já têm a
+barra de status e os cantos arredondados do aparelho real dentro da
+própria imagem; uma moldura adicional por cima seria redundante e
+competiria visualmente com o conteúdo.
+
+### Profundidade sem sobreposição física
+
+A composição de 3 telas no desktop usa deslocamento vertical
+(`translateY`) e rotação leve (±4°) nas duas telas laterais, mantendo a
+central alinhada e sem rotação — cria a sensação de profundidade
+("leve profundidade", pedida no briefing) sem sobrepor fisicamente as
+imagens (sem `margin` negativa, sem `z-index` competindo por espaço).
+
+**Motivo**: sobreposição literal (uma tela cobrindo parte da outra)
+aumenta o risco de recorte inesperado em larguras intermediárias e de
+overflow horizontal — um dos requisitos explícitos era "sem overflow
+horizontal" em qualquer largura. Deslocamento vertical com espaçamento
+(`gap`) preservado é visualmente quase tão dinâmico e é robusto em
+qualquer largura de tela, incluindo os breakpoints intermediários entre
+tablet e desktop.
+
+## Sprint 1.2.1 — Humanização da Home (complemento da Sprint 1.2)
+
+Complemento direto da revisão de design anterior. O diagnóstico desta
+Sprint: a Home estava estruturalmente melhor (ver Sprint 1.2.0 abaixo),
+mas ainda comunicava o GymLog inteiramente por texto — nenhum elemento
+da própria marca ou do próprio aplicativo tinha presença visual real.
+Resumo das decisões abaixo.
+
+### Por que a marca ganhou um símbolo, e não só um logo maior
+
+O Header tinha apenas o texto "GymLog" — nenhum símbolo, nenhuma forma
+reconhecível fora do texto. Criamos `Logo.astro` reaproveitando o
+mesmo traço do `favicon.svg` (já existente, já é a identidade visual do
+projeto) como um símbolo de marca reutilizável, e não apenas aumentamos
+o tamanho da fonte do wordmark.
+
+**Motivo**: aumentar só o tamanho do texto "GymLog" reforça a marca
+tanto quanto gritar mais alto reforça um argumento — maior, mas não mais
+memorável. Um símbolo consistente (mesmo traço no Header, pequeno, e na
+Hero, grande) é o que fica na memória; foi por isso que reaproveitamos o
+próprio favicon como fonte da verdade do símbolo, em vez de desenhar um
+novo.
+
+### Ordem de leitura da Hero: marca → mensagem → interface → CTA
+
+A Hero foi reestruturada com `grid-template-areas` para que a ordem
+visual seja marca, título, subtítulo, mockup do aplicativo, fatos de
+confiança e, por fim, os selos de loja — nessa ordem tanto no layout
+empilhado (mobile) quanto no layout em duas colunas (desktop). Antes, o
+mockup só aparecia visualmente ao lado do texto no desktop; no mobile
+empilhado, ele caía depois dos selos de loja (a chamada para ação
+aparecia antes do usuário ver a interface do aplicativo).
+
+**Motivo**: o briefing pediu explicitamente essa ordem de impacto
+visual. A ordem de leitura no HTML permanece marca → título → subtítulo
+→ fatos de confiança → CTA → mockup (a imagem, com `alt` descritivo, vem
+por último no documento) — quem usa leitor de tela recebe o discurso
+completo antes da imagem ilustrativa; `grid-template-areas` reordena
+apenas a apresentação visual, sem prejudicar a ordem de leitura.
+
+### Mockup: sem tela real disponível, mas também sem tela falsa
+
+O `AppMockup` anterior (Sprint 0.2.1) desenhava barras, um "gráfico" de
+barras e linhas simulando uma tela de evolução — um placeholder
+abstrato, mas ainda assim uma *simulação de interface*. O briefing desta
+Sprint pediu explicitamente para não usar mockups genéricos nem imagens
+de banco. Como nenhuma captura real do aplicativo está disponível ainda,
+a opção que sobra — e a única honesta — é não fingir uma interface:
+`AppMockup` sem `src` agora mostra apenas o símbolo do GymLog centralizado
+sobre um fundo neutro, dentro da mesma moldura que vai receber a captura
+real.
+
+**Motivo**: um "gráfico" falso comunica uma mentira pequena, mas ainda
+assim uma mentira — o usuário vê barras que não representam nenhum dado
+real do aplicativo. Um símbolo de marca centralizado comunica "aqui vai
+aparecer o aplicativo em breve", sem fingir ser algo que não é. Quando a
+captura real existir, basta passar `src`/`alt` para `AppMockup` — a
+moldura, a posição na Hero e o restante do layout não precisam mudar.
+
+### Moldura do mockup simplificada, não mais decorada
+
+O `AppMockup` antigo tinha padding interno considerável ao redor do
+conteúdo (pensado para o placeholder abstrato "respirar" dentro da
+moldura). A nova versão usa uma moldura fina, sem padding interno, com
+`object-fit: contain` na imagem — para que, quando a captura real for
+adicionada, ela preencha a moldura de borda a borda, com proporção
+preservada e sem corte.
+
+**Motivo**: o briefing pediu explicitamente para evitar "molduras
+exageradas" e priorizar que o usuário veja a interface. Um bezel grosso
+ou muito decorado chamaria atenção para a moldura em vez de para o
+conteúdo — o oposto do que "mostrar o produto" pede.
+
+### Composição de screenshots (1 grande / 2 lado a lado / 3 sobrepostas): decisão adiada
+
+O briefing deu liberdade para escolher a composição que melhor
+apresentasse o aplicativo. Sem nenhuma captura real disponível para
+avaliar qual composição fica melhor com conteúdo de verdade, decidimos
+não especular: a estrutura atual comporta uma única captura grande (a
+opção mais simples e a que funciona melhor em qualquer largura de tela,
+inclusive mobile). Compor 2 capturas lado a lado ou 3 sobrepostas fica
+para quando houver telas reais para testar — não faz sentido construir
+uma composição de sobreposição para uma imagem que ainda não existe.
+
+**Motivo**: construir uma composição elaborada em cima de conteúdo
+hipotético seria decidir no escuro — exatamente o tipo de escolha que só
+faz sentido revisitar com dados reais na mão.
+
+## Sprint 1.2.0 — Revisão de design da Home
+
+Sprint de revisão crítica, não de desenvolvimento. Nenhuma funcionalidade
+foi adicionada; o objetivo foi reduzir a Home a apenas o que comunica com
+clareza, eliminando os padrões que fazem um site parecer "gerado", não
+"desenhado". Resumo do diagnóstico e das decisões abaixo.
+
+### Diagnóstico: 3 grids de card quase idênticos, com conteúdo duplicado
+
+A Home tinha "Recursos" (8 cards), "Por que escolher o GymLog?" (7 cards)
+e "Em desenvolvimento" (5 cards) — 20 caixas no mesmo padrão visual
+(ícone + título + borda), seguidas de um FAQ (4 perguntas) que repetia os
+mesmos fatos já ditos nas seções acima. "Backup local" aparecia
+*literalmente* em duas seções diferentes; "Histórico completo" também.
+O FAQ da Home ainda duplicava 3 das 5 perguntas do FAQ da página de
+Suporte. O Hero usava textualmente "Treine melhor." — um dos exemplos
+citados no briefing como frase a evitar.
+
+**Motivo de agir**: esse é exatamente o padrão de landing page "gerada
+por IA" citado no briefing — muitas seções repetindo a mesma estrutura,
+conteúdo se sobrepondo, nenhuma hierarquia tipográfica (todo `h2` do
+mesmo tamanho), sensação de checklist. Cada card adicional child de uma
+seção genérica ("Recursos") sem curadoria não comunica confiança — pelo
+contrário, sinaliza "preenchimento de espaço".
+
+### Hero reescrito com uma mensagem específica, não genérica
+
+Novo texto: **"Sem conta. Sem nuvem. Só o seu treino."** (título) +
+"Registre treinos, cargas e repetições, e acompanhe sua evolução ao
+longo do tempo — tudo direto no seu aparelho, no seu ritmo." (subtítulo).
+O "kicker" ("GYMLOG" em texto pequeno acima do título) foi removido — o
+logo já está no Header, um parágrafo inteiro dedicado a repetir o nome
+da marca duas vezes na dobra inicial era redundância pura, não reforço
+de marca.
+
+**Motivo**: em vez de "treine melhor" (poderia ser qualquer app de
+treino do mundo), a nova headline usa o diferencial mais concreto e
+verificável do GymLog — não precisa de conta, não depende de nuvem — em
+uma estrutura de negação-depois-afirmação (duas frases negativas em
+branco, a frase positiva em laranja) que cria ênfase tipográfica real,
+não decorativa.
+
+### Três fatos de confiança migraram das seções para dentro do Hero
+
+Os itens "100% Offline", "Sem necessidade de criar conta" e "Seus dados
+permanecem no dispositivo" — antes 3 dos 7 cards de "Por que escolher o
+GymLog?" — viraram uma lista compacta de 3 itens (ícone pequeno + texto
+curto, sem card, sem descrição) dentro do próprio Hero, entre o
+subtítulo e os selos de loja.
+
+**Motivo**: são exatamente os fatos que constroem confiança imediata —
+faz sentido que apareçam nos primeiros segundos de leitura, não depois
+de rolar a página. Ao mesmo tempo, isso elimina a necessidade de uma
+seção inteira (com `Section`, `Container`, heading, grid) só para dizer
+3 frases curtas — usar o peso visual de uma seção completa para tão
+pouco conteúdo era desproporcional.
+
+### Seção "Recursos" reduzida de 8 para 3 itens, com heading específico
+
+`FEATURES` foi reescrita: "Registre cada treino" (cobre registro,
+cargas, repetições, exercícios), "Acompanhe sua evolução" (cobre
+histórico, dashboard, avaliações corporais, evolução física) e "Organize
+em ciclos" (ciclos de treino). O heading da seção passou de "Recursos"
+(rótulo genérico, o nome mais comum de seção em qualquer landing page)
+para **"Feito para quem treina de verdade"**.
+
+**Motivo**: 8 cards de peso igual não comunicam prioridade — parece uma
+lista exaustiva de funcionalidades, não uma escolha editorial. Agrupar
+em 3 pilares força a decidir o que realmente importa, e cada descrição
+ficou mais rica (cobre 2-3 conceitos antigos em uma frase) em vez de mais
+rasa. O heading "Feito para quem treina de verdade" também absorve a
+frase de posicionamento que existia como um card isolado em "Por que
+escolher" ("Desenvolvido para quem realmente treina") — em vez de *dizer*
+que é para quem treina sério, a seção *mostra* isso através de
+vocabulário específico ("cargas", "periodize", "avaliações corporais").
+
+### Seções "Por que escolher o GymLog?", "Em desenvolvimento" e FAQ removidas da Home
+
+"Por que escolher o GymLog?" foi absorvida (parte no Hero, parte no novo
+heading de Recursos — ver acima). "Em desenvolvimento" (5 cards
+tracejados de funcionalidades futuras) e o FAQ (4 perguntas) foram
+removidos por completo, não substituídos.
+
+**Motivo**: "Em desenvolvimento" é conteúdo de roadmap interno, não
+material de primeira impressão — não ajuda um visitante a entender ou
+confiar no produto, e é um padrão típico de página gerada ("aqui está
+tudo que ainda não existe"). O FAQ da Home duplicava fatos já
+estabelecidos pelo próprio Hero (offline, sem conta, backup) *e*
+duplicava a maior parte do FAQ da página de Suporte — mantê-lo nos dois
+lugares não agregava informação nova, só repetia. A página de Suporte
+segue sendo o lugar correto e único para essas perguntas.
+
+### Componentes/dados removidos por decorrência direta, não por "faxina" avulsa
+
+Como consequência direta das remoções acima, ficaram sem nenhum uso:
+`ValueProp.astro` (componente inteiro, apagado), as props `compact` e
+`upcoming` de `FeatureCard`/`FeatureGrid` (removidas, o componente voltou
+a ter uma única forma), e 12 ícones em `icons.ts`
+(`dumbbell`, `history`, `layout-dashboard`, `ruler`, `hard-drive`, `zap`,
+`crown`, `brain`, `gauge`, `bar-chart-3`, `refresh-cw`, `target`).
+
+**Motivo**: diferente da limpeza de código morto da Sprint 1.0 (que
+recolhia sobras antigas de decisões passadas), esta é consequência
+imediata das próprias mudanças desta Sprint — deixar esse código para
+trás seria contradizer o espírito da revisão ("prefira remover a
+adicionar"). `compact`/`upcoming` foram removidas (e não preservadas como
+"API pronta para o futuro", ao contrário das variantes `secondary`/`ghost`
+do `Button` na Sprint 1.0) porque foram desenhadas para o caso de uso
+específico que acabou de ser removido, não como parte de um sistema de
+design genérico.
+
+### `AppMockup` ganhou sombra permanente; nenhuma tela nova foi inventada
+
+A moldura do `AppMockup` passou a ter `box-shadow: var(--shadow-sm)` em
+repouso (antes só cards tinham sombra, e só no hover). O conteúdo interno
+do mockup (barras abstratas) não foi alterado.
+
+**Motivo**: pedido explícito do briefing era melhorar a composição sem
+inventar telas. Uma sombra sutil e permanente (reaproveitando o token já
+existente, não uma sombra nova) dá ao mockup a presença de "objeto
+fotografado" em vez de "retângulo desenhado", sem adicionar nenhum
+elemento visual novo ao vocabulário do site.
+
+### Tagline do Footer também reescrita (fora da Home, mas fixado por consistência)
+
+O Footer (visível em todas as páginas) tinha a tagline "Treine melhor.
+Acompanhe sua evolução." — a mesma frase citada no briefing como exemplo
+a evitar, e que antes vivia também no Hero. Trocada para "Seu treino.
+Seus dados. Sempre com você."
+
+**Motivo**: mesmo não sendo parte da Home isoladamente, deixar a frase
+genérica sobrevivendo no rodapé de toda página contradiria diretamente o
+objetivo desta Sprint — o Footer é renderizado pelo mesmo `Layout` usado
+pela Home, e a frase antiga era um eco literal do problema que acabou de
+ser corrigido no Hero.
+
 ## Sprint 1.1.0 — Identidade visual GymLog (paleta laranja + temas)
 
 ### Temas via `data-theme` + `prefers-color-scheme`, sem biblioteca

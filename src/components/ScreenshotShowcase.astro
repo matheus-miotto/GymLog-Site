@@ -1,0 +1,178 @@
+---
+import { withBase } from "../utils/paths";
+
+/**
+ * Composição de capturas reais do aplicativo GymLog (Hero da Home).
+ *
+ * Cada tela é renderizada em duas versões (`dark`/`light`); qual delas
+ * fica visível é decidido em CSS puro, pelos mesmos seletores de tema já
+ * usados em `theme.css` (`[data-theme]` + `prefers-color-scheme`) — sem
+ * JavaScript próprio, sem duplicar a lógica de temas do projeto.
+ *
+ * Responsivo sem JS: `display: none` por breakpoint controla quantas
+ * telas aparecem (1 no mobile, 2 no tablet, 3 no desktop).
+ */
+interface ScreenshotVariant {
+  src: string;
+  width: number;
+  height: number;
+}
+
+interface Screenshot {
+  role: "left" | "main" | "right";
+  alt: string;
+  dark: ScreenshotVariant;
+  light: ScreenshotVariant;
+}
+
+const SCREENSHOTS: Screenshot[] = [
+  {
+    role: "left",
+    alt: "Tela de registro de treino do aplicativo GymLog",
+    dark: { src: "/images/screenshots/dark/treino.jpg", width: 1080, height: 2102 },
+    light: { src: "/images/screenshots/light/treino.jpg", width: 1080, height: 2102 },
+  },
+  {
+    role: "main",
+    alt: "Tela inicial do aplicativo GymLog",
+    dark: { src: "/images/screenshots/dark/home.jpg", width: 1079, height: 2003 },
+    light: { src: "/images/screenshots/light/home.jpg", width: 1080, height: 1929 },
+  },
+  {
+    role: "right",
+    alt: "Tela de acompanhamento de evolução do aplicativo GymLog",
+    dark: { src: "/images/screenshots/dark/evolucao.jpg", width: 1079, height: 1655 },
+    light: { src: "/images/screenshots/light/evolucao.jpg", width: 1073, height: 1617 },
+  },
+];
+---
+
+<div class="screenshot-showcase">
+  {
+    SCREENSHOTS.map((shot) => (
+      <div class={`screenshot-showcase__item screenshot-showcase__item--${shot.role}`}>
+        <img
+          class="screenshot-showcase__image screenshot-showcase__image--dark"
+          src={withBase(shot.dark.src)}
+          width={shot.dark.width}
+          height={shot.dark.height}
+          alt={shot.alt}
+          loading={shot.role === "main" ? "eager" : "lazy"}
+          decoding="async"
+        />
+        <img
+          class="screenshot-showcase__image screenshot-showcase__image--light"
+          src={withBase(shot.light.src)}
+          width={shot.light.width}
+          height={shot.light.height}
+          alt={shot.alt}
+          loading={shot.role === "main" ? "eager" : "lazy"}
+          decoding="async"
+        />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .screenshot-showcase {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    justify-items: center;
+  }
+
+  .screenshot-showcase__item {
+    width: min(78%, 300px);
+  }
+
+  .screenshot-showcase__item--left,
+  .screenshot-showcase__item--right {
+    display: none;
+  }
+
+  .screenshot-showcase__image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Tema escuro (padrão do site) */
+  .screenshot-showcase__image--dark {
+    display: block;
+  }
+
+  .screenshot-showcase__image--light {
+    display: none;
+  }
+
+  /* Tema claro escolhido explicitamente */
+  :global(html[data-theme="light"]) .screenshot-showcase__image--dark {
+    display: none;
+  }
+
+  :global(html[data-theme="light"]) .screenshot-showcase__image--light {
+    display: block;
+  }
+
+  /* "Seguir sistema" (sem escolha salva) + sistema operacional em modo claro */
+  @media (prefers-color-scheme: light) {
+    :global(html:not([data-theme])) .screenshot-showcase__image--dark {
+      display: none;
+    }
+
+    :global(html:not([data-theme])) .screenshot-showcase__image--light {
+      display: block;
+    }
+  }
+
+  /* Tablet: 2 telas */
+  @media (min-width: 768px) {
+    .screenshot-showcase {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .screenshot-showcase__item {
+      width: 100%;
+    }
+
+    .screenshot-showcase__item--right {
+      display: block;
+      transform: translateY(var(--space-lg));
+    }
+
+    .screenshot-showcase__item--right .screenshot-showcase__image {
+      box-shadow: var(--shadow-sm);
+    }
+  }
+
+  /* Desktop: 3 telas, composição escalonada com leve profundidade */
+  @media (min-width: 1024px) {
+    .screenshot-showcase {
+      grid-template-columns: 0.82fr 1fr 0.82fr;
+      gap: var(--space-xl);
+    }
+
+    .screenshot-showcase__item--left {
+      display: block;
+      transform: translateY(var(--space-xl)) rotate(-5deg);
+    }
+
+    .screenshot-showcase__item--right {
+      transform: translateY(var(--space-xl)) rotate(5deg);
+    }
+
+    .screenshot-showcase__item--left .screenshot-showcase__image,
+    .screenshot-showcase__item--right .screenshot-showcase__image {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .screenshot-showcase__item--main {
+      position: relative;
+      z-index: 1;
+    }
+  }
+</style>

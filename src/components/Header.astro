@@ -1,6 +1,7 @@
 ---
 import Container from "./Container.astro";
 import Icon from "./Icon.astro";
+import Logo from "./Logo.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import { withBase } from "../utils/paths";
 
@@ -21,7 +22,9 @@ const links = [
 <header class="header">
   <Container as="div">
     <div class="header__inner">
-      <a href={withBase("/")} class="header__logo">GymLog</a>
+      <a href={withBase("/")} class="header__logo" aria-label="GymLog — página inicial">
+        <Logo size="sm" />
+      </a>
 
       {/*
         header__end agrupa nav + controles à direita. O checkbox do menu
@@ -94,8 +97,7 @@ const links = [
   }
 
   .header__logo {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    display: inline-flex;
     color: var(--color-text-primary);
     transition: color var(--transition-base);
   }

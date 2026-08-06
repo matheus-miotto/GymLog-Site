@@ -6,12 +6,18 @@
 interface Props {
   id?: string;
   ariaLabel?: string;
+  /**
+   * Reduz o espaçamento superior — usar quando a seção anterior já
+   * termina com respiro suficiente, para evitar dois paddings somados
+   * criando um vão maior do que o resto do ritmo vertical da página.
+   */
+  tight?: boolean;
 }
 
-const { id, ariaLabel } = Astro.props;
+const { id, ariaLabel, tight = false } = Astro.props;
 ---
 
-<section id={id} aria-label={ariaLabel} class="section">
+<section id={id} aria-label={ariaLabel} class:list={["section", { "section--tight": tight }]}>
   <slot />
 </section>
 
@@ -20,9 +26,17 @@ const { id, ariaLabel } = Astro.props;
     padding-block: var(--space-3xl);
   }
 
+  .section--tight {
+    padding-block-start: var(--space-xl);
+  }
+
   @media (max-width: 640px) {
     .section {
       padding-block: var(--space-xl);
+    }
+
+    .section--tight {
+      padding-block-start: var(--space-lg);
     }
   }
 </style>

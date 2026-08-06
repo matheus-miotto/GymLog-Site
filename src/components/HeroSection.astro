@@ -1,30 +1,50 @@
 ---
 import Section from "./Section.astro";
 import Container from "./Container.astro";
+import Icon from "./Icon.astro";
+import Logo from "./Logo.astro";
 import StoreBadge from "./StoreBadge.astro";
-import AppMockup from "./AppMockup.astro";
+import ScreenshotShowcase from "./ScreenshotShowcase.astro";
+import { TRUST_POINTS } from "../utils/home-content";
 ---
 
 <Section ariaLabel="Apresentação do GymLog">
   <Container>
     <div class="hero">
-      <div class="hero__content">
-        <p class="hero__kicker">GymLog</p>
-        <h1 class="hero__title">
-          Treine melhor.<br />Acompanhe sua <span class="hero__highlight">evolução</span>.
-        </h1>
-        <p class="hero__subtitle">
-          O GymLog ajuda você a registrar treinos, acompanhar sua evolução
-          física e organizar seus ciclos de treino, tudo de forma rápida,
-          intuitiva e totalmente offline.
-        </p>
-        <div class="hero__actions">
-          <StoreBadge store="App Store" />
-          <StoreBadge store="Google Play" />
-        </div>
+      <div class="hero__brand">
+        <Logo size="lg" />
       </div>
+
+      <h1 class="hero__title">
+        Cada treino registrado.<br />
+        <span class="hero__highlight">Cada evolução visível.</span>
+      </h1>
+
+      <p class="hero__subtitle">
+        Registre séries, cargas, repetições e exercícios em poucos toques,
+        e acompanhe sua evolução sempre organizada e fácil de entender.
+      </p>
+
+      <ul class="hero__points">
+        {
+          TRUST_POINTS.map((point) => (
+            <li>
+              <span class="hero__point-icon">
+                <Icon name={point.icon} size={16} />
+              </span>
+              <span>{point.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="hero__actions">
+        <StoreBadge store="App Store" />
+        <StoreBadge store="Google Play" />
+      </div>
+
       <div class="hero__media">
-        <AppMockup />
+        <ScreenshotShowcase />
       </div>
     </div>
   </Container>
@@ -33,27 +53,26 @@ import AppMockup from "./AppMockup.astro";
 <style>
   .hero {
     display: grid;
-    grid-template-columns: 1fr;
     align-items: center;
-    gap: var(--space-2xl);
+    grid-template-areas:
+      "brand"
+      "title"
+      "subtitle"
+      "media"
+      "points"
+      "actions";
   }
 
-  .hero__content {
-    max-width: 42rem;
-  }
-
-  .hero__kicker {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: var(--space-sm);
+  .hero__brand {
+    grid-area: brand;
+    margin-bottom: var(--space-md);
   }
 
   .hero__title {
-    font-size: var(--font-size-5xl);
-    margin-bottom: var(--space-md);
+    grid-area: title;
+    font-size: var(--font-size-3xl);
+    line-height: 1.12;
+    margin: 0 0 var(--space-sm);
   }
 
   .hero__highlight {
@@ -61,31 +80,76 @@ import AppMockup from "./AppMockup.astro";
   }
 
   .hero__subtitle {
-    font-size: var(--font-size-lg);
+    grid-area: subtitle;
+    font-size: var(--font-size-base);
     color: var(--color-text-secondary);
-    max-width: 60ch;
+    max-width: 40ch;
+    margin: 0 0 var(--space-lg);
+  }
+
+  .hero__media {
+    grid-area: media;
     margin-bottom: var(--space-lg);
   }
 
+  .hero__points {
+    grid-area: points;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-lg);
+    list-style: none;
+    margin: 0 0 var(--space-md);
+    padding: 0;
+  }
+
+  .hero__points li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .hero__point-icon {
+    display: inline-flex;
+    color: var(--color-primary);
+  }
+
   .hero__actions {
+    grid-area: actions;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-sm);
+    margin: 0;
   }
 
   @media (min-width: 768px) {
     .hero {
+      column-gap: var(--space-2xl);
       grid-template-columns: 1.1fr 0.9fr;
+      grid-template-areas:
+        "brand    ."
+        "title    media"
+        "subtitle media"
+        "points   media"
+        "actions  media";
     }
-  }
 
-  @media (max-width: 640px) {
     .hero__title {
-      font-size: var(--font-size-3xl);
+      font-size: var(--font-size-5xl);
+      line-height: 1.08;
+      margin-bottom: var(--space-md);
     }
 
     .hero__subtitle {
-      font-size: var(--font-size-base);
+      font-size: var(--font-size-lg);
+      max-width: 42ch;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero {
+      grid-template-columns: 1fr 1.05fr;
     }
   }
 </style>
