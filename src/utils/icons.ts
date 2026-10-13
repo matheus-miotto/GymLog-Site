@@ -1,7 +1,7 @@
 import clipboardList from "lucide-static/icons/clipboard-list.svg?raw";
 import trendingUp from "lucide-static/icons/trending-up.svg?raw";
 import repeat from "lucide-static/icons/repeat.svg?raw";
-import wifiOff from "lucide-static/icons/wifi-off.svg?raw";
+import smartphone from "lucide-static/icons/smartphone.svg?raw";
 import userX from "lucide-static/icons/user-x.svg?raw";
 import lock from "lucide-static/icons/lock.svg?raw";
 import chevronDown from "lucide-static/icons/chevron-down.svg?raw";
@@ -20,7 +20,7 @@ export const ICONS = {
   "clipboard-list": clipboardList,
   "trending-up": trendingUp,
   repeat,
-  "wifi-off": wifiOff,
+  smartphone,
   "user-x": userX,
   lock,
   "chevron-down": chevronDown,

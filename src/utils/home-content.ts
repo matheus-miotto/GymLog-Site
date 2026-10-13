@@ -46,7 +46,7 @@ export interface TrustPoint {
  * não em uma seção própria).
  */
 export const TRUST_POINTS: TrustPoint[] = [
-  { icon: "wifi-off", label: "100% offline" },
+  { icon: "smartphone", label: "Seus treinos ficam no seu dispositivo" },
   { icon: "user-x", label: "Sem criar conta" },
   { icon: "lock", label: "Seus dados, seu controle" },
 ];

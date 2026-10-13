@@ -8,7 +8,7 @@ export const SUPPORT_FAQ: FaqEntry[] = [
   {
     question: "O GymLog funciona offline?",
     answer:
-      "Sim. O GymLog funciona 100% offline, sem depender de conexão com a internet.",
+      "Os principais dados de treino ficam armazenados no seu dispositivo, e você não precisa criar uma conta para usar o GymLog. Algumas funcionalidades, como publicidade e gerenciamento de assinaturas, podem depender de conexão com a internet.",
   },
   {
     question: "Como faço backup?",
