@@ -9,7 +9,7 @@ import { SITE } from "../utils/site";
  * conteúdo em cards da Home) por ser um texto corrido de política,
  * não uma lista de itens estruturados repetíveis — ver DECISIONS.md.
  */
-const lastUpdated = "28 de outubro de 2026";
+const lastUpdated = "7 de novembro de 2026";
 ---
 
 <Layout
@@ -54,6 +54,12 @@ const lastUpdated = "28 de outubro de 2026";
             pesagens e avaliações corporais e físicas que você registrar
             (por exemplo, medidas, IMC, percentual de gordura e outras
             métricas);
+          </li>
+          <li>
+            as publicações que você fizer no feed de treinos do
+            aplicativo (um resumo do treino, o comentário que você
+            escrever, as curtidas e os comentários) e, se você
+            anexar, a foto da publicação;
           </li>
           <li>preferências do aplicativo, como o tema claro/escuro.</li>
         </ul>
@@ -170,11 +176,29 @@ const lastUpdated = "28 de outubro de 2026";
           visualizam anúncios nem essas mensagens.
         </p>
 
+        <h2>Câmera e fotos do feed de treinos</h2>
+        <p>
+          Ao postar um treino no feed, você pode, se quiser, anexar uma
+          foto. A câmera só é usada quando você toca em "Tirar foto", e
+          o aplicativo pede a sua permissão nesse momento. Ao escolher
+          uma foto da galeria, o aplicativo recebe somente a imagem que
+          você selecionar, por meio do seletor do sistema, e não tem
+          acesso ao restante das suas fotos.
+        </p>
+        <p>
+          A foto é reduzida e guardada em uma pasta privada do
+          aplicativo, no seu dispositivo. Ela não é enviada a nenhum
+          servidor do GymLog, não é incluída no arquivo de backup e é
+          apagada do dispositivo quando você exclui a publicação ou
+          desinstala o aplicativo. Você pode revogar a permissão da
+          câmera a qualquer momento nas configurações do sistema; as
+          demais funções do aplicativo não dependem dela.
+        </p>
+
         <h2>Dados que o GymLog não solicita</h2>
         <p>O GymLog não solicita nem tem acesso a:</p>
         <ul>
           <li>localização;</li>
-          <li>câmera;</li>
           <li>microfone;</li>
           <li>contatos;</li>
           <li>login, e-mail ou senha de conta.</li>
