@@ -10,12 +10,12 @@ import { withBase } from "../utils/paths";
  * Política de Privacidade (ver DECISIONS.md): texto corrido de termos,
  * não uma lista de itens estruturados repetíveis.
  */
-const lastUpdated = "24 de setembro de 2026";
+const lastUpdated = "24 de novembro de 2026";
 ---
 
 <Layout
   title="Termos de Uso"
-  description="Termos de Uso do GymLog: condições de uso do aplicativo e da assinatura GymLog Premium, incluindo renovação, cancelamento e armazenamento de dados."
+  description="Termos de Uso do GymLog: condições de uso do aplicativo e da assinatura GymLog Premium, incluindo renovação, cancelamento, armazenamento de dados e o uso opcional de recursos de inteligência artificial."
 >
   <Section ariaLabel="Termos de Uso">
     <Container>
@@ -55,7 +55,9 @@ const lastUpdated = "24 de setembro de 2026";
           aplicativo não substitui orientação médica, nutricional ou de
           educação física — consulte um profissional de saúde
           qualificado antes de iniciar ou alterar qualquer programa de
-          treino, especialmente em caso de condições preexistentes.
+          treino, especialmente em caso de condições preexistentes. Isso
+          vale também para as sugestões geradas pelos recursos de
+          inteligência artificial, descritos adiante.
         </p>
 
         <h2>Armazenamento dos dados</h2>
@@ -69,8 +71,9 @@ const lastUpdated = "24 de setembro de 2026";
           armazenamento e a atualização de backups exportados são de
           responsabilidade exclusiva do usuário. Funcionalidades que
           dependem de serviços de terceiros — como a assinatura GymLog
-          Premium e a exibição de anúncios — envolvem processamento
-          adicional, detalhado na Política de Privacidade.
+          Premium, a exibição de anúncios e os recursos opcionais de
+          inteligência artificial — envolvem processamento adicional,
+          detalhado na Política de Privacidade.
         </p>
 
         <h2>GymLog Premium</h2>
@@ -151,6 +154,61 @@ const lastUpdated = "24 de setembro de 2026";
           <a href={withBase("/privacy")}>Política de Privacidade</a>.
         </p>
 
+        <h2>Recursos de inteligência artificial (opcionais)</h2>
+        <p>
+          O GymLog oferece recursos opcionais que usam inteligência
+          artificial (IA): um relatório de análise ao final do treino,
+          disponível também no plano gratuito, e a avaliação do
+          próximo treino, que sugere a ordem dos exercícios e a carga
+          de cada um e faz parte do GymLog Premium. Eles ficam
+          desligados até você ativá-los, e nenhum dado é enviado a um
+          serviço de IA sem que você concorde com o aviso exibido no
+          aplicativo e toque para usá-los.
+        </p>
+        <p>
+          <strong>Sua chave e seus custos.</strong> Os recursos de IA
+          funcionam com uma chave de API que você mesmo obtém do
+          serviço de IA escolhido (por exemplo, Anthropic ou Google) e
+          informa ao aplicativo. O uso desse serviço é regido pelos
+          termos dele e feito na sua conta: eventuais cobranças,
+          créditos, limites de uso e a disponibilidade são definidos
+          por ele, e o GymLog não cobra por esse uso nem se
+          responsabiliza por ele. Você é responsável por manter a sua
+          chave em sigilo e por usá-la de acordo com os termos do
+          serviço.
+        </p>
+        <p>
+          <strong>O que você envia.</strong> Ao usar esses recursos
+          você envia ao serviço de IA dados do seu treino e, na
+          avaliação do próximo treino, o cadastro da rotina e as
+          observações que escreveu nos exercícios, conforme descrito
+          na{" "}
+          <a href={withBase("/privacy")}>Política de Privacidade</a>.
+          Não inclua nas observações informações pessoais ou de
+          terceiros que você não queira enviar.
+        </p>
+        <p>
+          <strong>Natureza do resultado.</strong> O conteúdo gerado por
+          IA é uma sugestão geral: pode conter erros, omissões ou não
+          considerar o seu caso, e não é aconselhamento médico,
+          nutricional nem de educação física, nem substitui a
+          orientação do seu treinador ou de um profissional
+          qualificado. Nada é aplicado ao seu treino sem a sua
+          confirmação, e a decisão de seguir ou não cada sugestão é
+          sua, assim como a responsabilidade pelo treino realizado.
+          Se uma análise gerada por IA for ofensiva, errada ou perigosa,
+          use o link "Reportar um problema com esta análise", exibido
+          junto dela no aplicativo, ou escreva para o e-mail de contato
+          indicado ao final desta página.
+        </p>
+        <p>
+          <strong>Alterações.</strong> Como esses recursos dependem de
+          serviços de terceiros, eles podem ficar temporariamente
+          indisponíveis, mudar de comportamento ou ser alterados ou
+          removidos do GymLog, inclusive por mudanças nas regras desses
+          serviços.
+        </p>
+
         <h2>Limitação de responsabilidade</h2>
         <p>
           O GymLog é fornecido "como está", sem garantias de que estará
@@ -159,8 +217,11 @@ const lastUpdated = "24 de setembro de 2026";
           garantimos disponibilidade ininterrupta. Na máxima extensão
           permitida pela lei, o desenvolvedor do GymLog não se
           responsabiliza por perdas, danos ou lesões decorrentes do uso
-          inadequado do aplicativo ou de treinos realizados sem
-          orientação profissional adequada.
+          inadequado do aplicativo, de treinos realizados sem
+          orientação profissional adequada ou da aplicação de
+          sugestões geradas por inteligência artificial, nem por
+          custos, indisponibilidade ou condutas dos serviços de IA de
+          terceiros escolhidos por você.
         </p>
 
         <h2>Propriedade intelectual</h2>
